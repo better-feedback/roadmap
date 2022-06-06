@@ -13,15 +13,21 @@ export async function getIssues(
   }
 ) {
   const { perPage = 10, page = 1, labels } = reqParams;
+
+  let labelsArray = labels?.split(",");
+
   const { data = [] } = await octokit.rest.issues.listForRepo({
     owner: config.github.repoOwner,
     repo: config.github.repoName,
-    labels,
     per_page: perPage,
     page,
   });
 
-  return data;
+  let filtered = data.filter((issue) =>
+    issue.labels.some((label) => labelsArray?.includes(label.name))
+  );
+
+  return filtered;
 }
 
 export async function getIssueByNumber(issueNumber: number) {

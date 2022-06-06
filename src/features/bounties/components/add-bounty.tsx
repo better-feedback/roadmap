@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 
 import FormInput from "features/common/components/form-input";
 import LabeledInput from "features/common/components/labeled-input";
@@ -10,8 +10,10 @@ import { useIssueDetailsQuery } from "features/issues/hooks/useIssuesQueries";
 import { useWalletChainQuery } from "features/common/hooks/useWalletQueries";
 import useAddBountyMutation from "../hooks/useAddBountyMutation";
 import { viewFunction } from "features/near/api";
+import { useRouter } from "next/router";
 
 import type { Token } from "features/tokens/types";
+
 
 export default function AddBounty(props: { issueNumber: number }) {
   const [token, setToken] = React.useState<Token | null>(null);
@@ -23,6 +25,14 @@ export default function AddBounty(props: { issueNumber: number }) {
   const { data: issue, isLoading } = useIssueDetailsQuery(props.issueNumber);
   const { data: walletChain = "" } = useWalletChainQuery();
   const addBountyMutation = useAddBountyMutation();
+  const router = useRouter();
+
+  useEffect(() => {
+    let issueNumber = window.location.pathname.split("/")[2];
+    if (!walletChain) {
+      router.replace(`/issues/${issueNumber}`);
+    }
+  }, [walletChain]);
 
   function handleChangeMaxDeadline(event: React.ChangeEvent<HTMLInputElement>) {
     setMaxDeadline(event.target.value);
@@ -33,13 +43,14 @@ export default function AddBounty(props: { issueNumber: number }) {
   ) {
     event.preventDefault();
 
-    if (!issue || !walletChain || !token || !amount ) {
+    if (!issue || !walletChain || !token || !amount) {
       return setAreInputsValid(false);
     }
 
+    localStorage.setItem("isBountyAdded", "true");
 
     addBountyMutation.mutate({
-      issueNumber: issue.number,
+      issueNumber: issue.url,
       issueDescription: "byebye",
       chain: walletChain,
       token: token.address,
@@ -51,11 +62,19 @@ export default function AddBounty(props: { issueNumber: number }) {
   }
 
   useEffect(() => {
+    const isBountyAdded = localStorage.getItem("isBountyAdded");
+    if (isBountyAdded === "true") {
+      localStorage.removeItem("isBountyAdded");
+      router.replace(`/issues/${props.issueNumber}`);
+    }
+  }, []);
 
-    console.log("RUNNING")
-    if(!issue) return
+  useEffect(() => {
+    /* Checking if the issue exists. */
+    if (!issue) return;
 
-    viewFunction("getBountyByIssue", { issueId: issue?.number })
+    /* Getting bounty details for the issue */
+    viewFunction("getBountyByIssue", { issueId: issue?.url })
       .then((res) => {
         setDoesBountyExist(res);
       })
@@ -71,8 +90,6 @@ export default function AddBounty(props: { issueNumber: number }) {
   if (!issue) {
     return <div>Not found</div>;
   }
-
-  console.log(addBountyMutation.error);
 
   return (
     <div className="max-w-md mx-auto">

@@ -8,7 +8,7 @@ export default function useAddBountyMutation() {
 
   const addBountyMutation = useMutation(
     async (params: {
-      issueNumber: number;
+      issueNumber: string;
       chain: string;
       issueDescription: string;
       token: string;
@@ -18,10 +18,10 @@ export default function useAddBountyMutation() {
       const { addBounty } = chainsToApi[params.chain];
 
       const bountyId = await addBounty(params);
-      await addBountyToMetadataComment(params.issueNumber, {
-        chain: params.chain,
-        bountyId,
-      });
+      // await addBountyToMetadataComment(params.issueNumber, {
+      //   chain: params.chain,
+      //   bountyId,
+      // });
     },
     {
       onSuccess: (data, variables) => {

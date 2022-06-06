@@ -25,8 +25,13 @@ export async function signIn() {
 
 export async function isSignedIn() {
   const nearWalletConnection = await initNearWalletConnection();
+  let bool = await nearWalletConnection.isSignedIn();
+  return bool;
+}
 
-  return nearWalletConnection.isSignedIn();
+export async function returnWallet() {
+  const nearWalletConnection = await initNearWalletConnection();
+  return nearWalletConnection;
 }
 
 export async function signOut() {
@@ -84,7 +89,6 @@ export async function addBounty(params: {
 }) {
   
   callFunction("fundBounty", {"issueId" : params.issueNumber , "deadline" : params.maxDeadline.toString()} , params.amount.toString()).then((response) => {
-    console.log("Fund response", response);
   }).catch((error) => {
     console.log("Fund Error" , error);
   });

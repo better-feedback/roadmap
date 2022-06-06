@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { IssuesListItem } from "./issues-list-item";
 import { useIssuesQuery } from "../hooks/useIssuesQueries";

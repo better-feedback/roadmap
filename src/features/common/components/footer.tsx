@@ -1,17 +1,28 @@
 import config from "config";
 
-const EXTERNAL_LINKS = [
+const BETTER_LINKS = [
   {
     label: "Homepage",
-    link: config.site.externalLinks.homepage,
+    link: config.site.url,
   },
   {
     label: "Documentation",
     link: config.site.externalLinks.docs,
   },
   {
-    label: "GitHub",
-    link: `https://github.com/${config.github.repoOwner}/${config.github.repoName}`,
+    label: "Discord",
+    link: `https://discord.com/invite/${config.site.externalLinks.discord}`,
+  },
+  {
+    label: "Twitter",
+    link: `https://twitter.com/${config.site.externalLinks.twitter}`,
+  },
+];
+
+const EXTERNAL_LINKS = [
+  {
+    label: "Homepage",
+    link: config.site.url,
   },
 ];
 
@@ -23,10 +34,10 @@ export function Footer() {
         <div className="grid grid-cols-3 p-4 text-gray-500 dark:text-zinc-500">
           <div>
             Powered by{" "}
-            <a href="https://better.com" target="_blank" rel="noreferrer">
+            <a href="https://betterhq.org/" target="_blank" rel="noreferrer">
               Better
             </a>{" "}
-            © 2021
+            © 2022
           </div>
           <div>
             <div className="mb-2 font-medium uppercase">
@@ -45,7 +56,7 @@ export function Footer() {
           <div>
             <div className="mb-2 font-medium uppercase">Better</div>
             <ul className="space-y-1">
-              {EXTERNAL_LINKS.map(({ label, link }) => (
+              {BETTER_LINKS.map(({ label, link }) => (
                 <li key={label}>
                   <a href={link} target="_blank" rel="noreferrer">
                     {label}

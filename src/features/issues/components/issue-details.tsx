@@ -13,8 +13,6 @@ export function IssueDetails(props: { issueNumber: number }) {
     isFetching,
   } = useIssueDetailsQuery(props.issueNumber);
 
-  console.log(issue);
-
   if (isLoading) {
     return <div>Loading...</div>;
   }

@@ -5,3 +5,12 @@ export type BountyParams = {
   amount: string;
   maxDeadline: number;
 };
+
+export type Bounty = {
+  issueId: string;
+  pool: string;
+  funders: string[];
+  workers: string[];
+  status: string;
+  deadline: string;
+};
