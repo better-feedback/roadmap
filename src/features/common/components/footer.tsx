@@ -24,6 +24,10 @@ const EXTERNAL_LINKS = [
     label: "Homepage",
     link: config.site.url,
   },
+  {
+    label: "Add new issue",
+    link: `https://github.com/${config.github.repoOwner}/${config.github.repoName}/issues/new/choose`,
+  },
 ];
 
 export function Footer() {

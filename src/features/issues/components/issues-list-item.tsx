@@ -11,7 +11,7 @@ type Props = {
 export function IssuesListItem(props: Props) {
   const { issue } = props;
   return (
-    <li className="py-2 px-4 hover:bg-zinc-800 cursor-pointer overlow">
+    <li className="py-2 px-4 dark:hover:bg-zinc-800 hover:bg-gray-200 cursor-pointer overlow">
       <Link passHref href={`/issues/${issue.number}`}>
         <div className="flex flex-row justify-between items-center">
           <div className="flex flex-col">

@@ -9,8 +9,8 @@ const IssuesListPage: NextPage = () => {
     <Layout title="Home">
       <div className="grid grid-cols-3 space-x-2">
         <IssuesList issueType={issueTypes.OPEN} title="Open" />
-        <IssuesList issueType={issueTypes.PLANNED} title="Planned" />
         <IssuesList issueType={issueTypes.IN_PROGRESS} title="In Progress" />
+        <IssuesList issueType={issueTypes.LIVE} title="Live" />
       </div>
     </Layout>
   );

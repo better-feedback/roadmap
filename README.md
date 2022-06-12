@@ -36,9 +36,20 @@ After a successful deployment, point your vercel deployment to your custom URL, 
 
 🎊 Congratulations, you just deployed your custom Better site 🎉
 
-To customize the project name and footer links, edit the variables in `\better-app\src\config.ts`.
+---
 
-You want to customize your site UI or got feature ideas for Better? Join our [Discord](https://discord.com/invite/wwwwRFa6aj) and let us know!
+## How to customize your Better site
+
+Set your project name and custom footer links in this config file: `\better-app\src\config.ts`
+
+Better mirrors each Github issue based on its tags. The default tags are `open`, `inProgress`, `live`.
+If you want to set your own, edit the following files:
+-  `\better-app\src\config.ts`
+- `src/features/issues/components/issues-list-page.tsx`
+- `src/features/issues/constants.ts`
+- `src/features/issues/types.ts`
+
+You want to customize your site's UI or got feature ideas for Better? Join our [Discord](https://discord.com/invite/wwwwRFa6aj) and let us know!
 
 ---
 
