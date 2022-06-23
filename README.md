@@ -1,4 +1,4 @@
-# Better
+# Better 
 
 ## How to submit your idea
 

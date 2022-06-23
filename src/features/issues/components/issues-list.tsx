@@ -1,12 +1,16 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import { IssuesListItem } from "./issues-list-item";
 import { useIssuesQuery } from "../hooks/useIssuesQueries";
+import { useQueryClient } from "react-query";
 
-import type { IssueType } from "../types";
+import type { Issue, IssueType } from "../types";
+import { getVoteCount } from "features/common/hooks/useGuildQueries";
 
 export function IssuesList(props: { title: string; issueType: IssueType }) {
   const [currentPage, setCurrentPage] = React.useState(1);
+
+  const client = useQueryClient();
 
   const {
     data = [],
