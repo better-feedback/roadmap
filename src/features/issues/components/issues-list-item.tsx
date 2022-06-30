@@ -53,15 +53,13 @@ export function IssuesListItem(props: Props) {
               })}
             </div>
           </div>
-
-          <ListItemMetadata metadata={issue.metadata} />
         </div>
       </Link>
-
+      <ListItemMetadata metadata={issue.metadata} />
       <div className="flex flex-col justify-center items-center ">
         <span>{data?.votes}</span>
         <IoIosArrowUp
-          className={`text-[1.5rem] opacity-50 transition-all duration-300 hover:opacity-100 ${
+          className={`text-[1.5rem] h-5	opacity-50 transition-all duration-300 hover:opacity-100 ${
             data?.voters?.includes(signedInAccountQuery.data + "_up") &&
             "text-[#FF6CE5] opactity-100"
           }`}
@@ -97,7 +95,7 @@ export function IssuesListItem(props: Props) {
               console.error(e);
             }
           }}
-          className={`text-[1.5rem] opacity-50 transition-all duration-300 hover:opacity-100 ${
+          className={`text-[1.5rem] h-5 opacity-50 transition-all duration-300 hover:opacity-100 ${
             data?.voters?.includes(signedInAccountQuery.data + "_down") &&
             "text-red-500"
           }`}

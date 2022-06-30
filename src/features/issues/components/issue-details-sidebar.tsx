@@ -38,7 +38,7 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
       });
   };
 
-  /* A hook that is called when the component is mounted. 
+  /* A hook that is called when the component is mounted.
   In order to fetch the bounty stored in the contract
  */
   useEffect(() => {
@@ -65,7 +65,7 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
   }, [bounty, pool]);
 
   return (
-    <aside>
+    <aside className="col-span-5 md:col-span-1 my-4 border-t-2 border-gray-100 dark:border-zinc-800 md:my-0 md:border-t-0">
       <SidebarItem title="Status" content={<StatusLabel status="open" />} />
       <SidebarItem
         title="Total bounty sum"
