@@ -14,7 +14,7 @@ export function Layout(props: Props) {
     <div className="min-h-screen dark:bg-zinc-900 dark:text-white">
       <Head title={props.title} metaDescription={props.metaDescription} />
       <HeaderNav />
-      <main>
+      <main className="py-6">
         <div className="container mx-auto p-4">{props.children}</div>
       </main>
       <Footer />

@@ -4,7 +4,7 @@ import { chainsToApi } from "../constants";
 
 export function useWalletChainQuery() {
   return useQuery(["wallet", "chain"], () => {
-    const walletChain = window.localStorage.getItem("wallet-chain");
+    const walletChain = window.localStorage.getItem("wagmi.store");
     return walletChain;
   });
 }

@@ -1,5 +1,9 @@
 blank_issues_enabled: true
 contact_links:
-  - name: Join the Better Discord Community
-    url: https://discord.com/invite/wwwwRFa6aj
-    about: Ask us anything!
+  - name: Commonwealth Discussions
+    url: https://commonwealth.im/evmos/
+    about: Join the discussions revolving around Governance on Commonwealth  
+    
+  - name: Evmos Discord
+    url: https://discord.gg/evmos
+    about: Join the discussions revolving around Governance on Discord

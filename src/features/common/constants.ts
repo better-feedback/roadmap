@@ -1,27 +1,27 @@
-import * as nearApi from "features/near/api";
+import * as evmosApi from "features/evmos/api";
 
 import type { ChainApi } from "./types";
 
 export const chains = {
-  NEAR: "near",
+  EVMOS: "evmos"
 };
 
 export const chainsToApi: {
   [chain: string]: ChainApi;
 } = {
-  [chains.NEAR]: {
+  [chains.EVMOS]: {
     // Wallet API
-    signIn: nearApi.signIn,
-    signOut: nearApi.signOut,
-    isSignedIn: nearApi.isSignedIn,
-    getAccountId: nearApi.getAccountId,
+    signIn: evmosApi.signIn,
+    signOut: evmosApi.signOut,
+    isSignedIn: evmosApi.isSignedIn,
+    getAccountId: evmosApi.getAccountId,
     // Contract API
-    addBounty: nearApi.addBounty,
-    claimBounty: nearApi.claimBounty,
-    doneBounty: nearApi.doneBounty,
-    giveUpBounty: nearApi.giveUpBounty,
-    getBountyById: nearApi.getBountyById,
+    addBounty: evmosApi.addBounty,
+    claimBounty: evmosApi.claimBounty,
+    doneBounty: evmosApi.doneBounty,
+    giveUpBounty: evmosApi.giveUpBounty,
+    getBountyById: evmosApi.getBountyById,
     // Tokens API
-    getTokens: nearApi.getTokens,
+    getTokens: evmosApi.getTokens,
   },
 };

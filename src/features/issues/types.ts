@@ -1,4 +1,4 @@
-export type IssueType = "open" | "inProgress" | "live";
+export type IssueType = "planned" | "inprogress" | "proposed" | "onchain";
 
 export type Metadata = {
   bounties: {
@@ -23,6 +23,9 @@ export type Issue = {
   labels: Label[];
   user: {
     login: string;
+    address: string;
   };
   html_url: string;
+  color: string;
+  comments: number;
 };

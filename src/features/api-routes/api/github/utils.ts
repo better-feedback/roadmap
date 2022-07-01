@@ -8,7 +8,7 @@ export function getMetadataAndCleanedComment(comment: string): {
 } {
   const match = comment.match(metadataCommentRegex);
 
-  const metadata = match ? JSON.parse(match[1]) : { bounties: [] };
+  const metadata = match ? JSON.parse(match[1]) : { address: [] };
   const cleanedComment = comment.replace(metadataCommentRegex, "");
   return { cleanedComment, metadata };
 }

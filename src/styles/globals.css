@@ -1,3 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body{
+    font-family: 'Montserrat';
+}
+
+progress .progress-darksuccess::-moz-progress-bar, .progress-darksuccess::-webkit-progress-value, .progress-darksuccess:intermediate::after{
+    --tw-bg-opacity: 1;
+    background-color: #00AB52;
+}

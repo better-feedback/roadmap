@@ -1,8 +1,9 @@
 import type { IssueType } from "./types";
 
-export const issueTypes: Record<"OPEN" | "IN_PROGRESS" | "LIVE", IssueType> =
+export const issueTypes: Record<"PLANNED" | "INPROGRESS" | "PROPOSED" | "ONCHAIN", IssueType> =
   {
-    OPEN: "open",
-    IN_PROGRESS: "inProgress",
-    LIVE: "live",
+    PLANNED: "planned",
+    INPROGRESS: "inprogress",
+    PROPOSED: "proposed",
+    ONCHAIN: "onchain",
   };

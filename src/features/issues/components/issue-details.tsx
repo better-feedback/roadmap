@@ -3,6 +3,7 @@ import remarkGfm from "remark-gfm";
 
 import IssueDetailsHeading from "./issue-details-heading";
 import IssueDetailsSidebar from "./issue-details-sidebar";
+import IssueDetailsLeftbar from "./issue-details-leftbar";
 
 import { useIssueDetailsQuery } from "../hooks/useIssuesQueries";
 
@@ -22,12 +23,19 @@ export function IssueDetails(props: { issueNumber: number }) {
   }
 
   return (
-    <div className="max-w-4xl grid grid-cols-5 mx-auto">
-      <div className="col-span-5">
+    <div className="grid grid-cols-5 mx-auto">
+          <div className="col-span-5 md:col-span-1 pr-8 row-span-3 mb-8 md:mb-0">
+          <IssueDetailsLeftbar issue={issue} />
+
+                  </div>
+      <div className="col-span-5 col-start-1 md:col-start-2">
         <IssueDetailsHeading issue={issue} />
       </div>
-      <div className="col-span-5 md:col-span-4">
-        <div className="prose dark:prose-invert">
+
+
+      <div className="col-span-5 md:col-span-3 col-start-1 md:col-start-2 row-start-auto">
+
+        <div className="prose lg:prose-lg dark:prose-invert">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>
             {issue.body}
           </ReactMarkdown>
