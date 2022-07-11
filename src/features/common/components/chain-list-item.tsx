@@ -8,7 +8,7 @@ export default function ChainListItem(props: {
 }) {
   return (
     <li
-      className="flex flex-row items-center p-2 mt-2 rounded-lg cursor-pointer hover:bg-black hover:bg-opacity-30 text-white"
+      className="flex flex-row items-center p-2 mt-2 rounded-lg cursor-pointer hover:bg-black hover:bg-opacity-30 text-black dark:text-white"
       onClick={() => props.onClick(props.chainName)}
     >
       <ChainIcon
