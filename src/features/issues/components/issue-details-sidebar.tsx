@@ -26,7 +26,6 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
   const [poolInDollars, setPoolInDollars] = useState<string>("");
   const [isApplyingToWork, setIsApplyingToWork] = useState(false);
 
-
   const loadBountyDetails = () => {
     viewFunction("getBountyByIssue", { issueId: props.issue.url })
       .then((res) => {
@@ -107,7 +106,7 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
           onClick={() => {
             setIsApplyingToWork(true);
             /* Calling the startWork function in the contract. */
-            callFunction("startWork", { issueId: props.issue.number })
+            callFunction("startWork", { issueId: props.issue.url })
               .then(() => {
                 setIsApplyingToWork(false);
                 loadBountyDetails();
