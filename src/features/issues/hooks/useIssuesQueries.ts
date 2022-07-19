@@ -20,7 +20,10 @@ export function useIssuesQuery(issueType: IssueType, page: number) {
     }
 
     return issues.sort(
-      (a, b) => issueVotes[b.number].votes - issueVotes[a.number].votes
+      (a, b) =>
+        issueVotes[b.number].upVotes -
+        issueVotes[b.number].downVotes -
+        (issueVotes[a.number].upVotes - issueVotes[a.number].downVotes)
     );
   });
 }

@@ -7,6 +7,8 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 import { Octokit } from "octokit";
 
+import {CommentMatadata} from "../../../features/api-routes/api/github/types";
+
 import {
   setMetadataComment,
   getMetadataAndCleanedComment,
@@ -38,17 +40,21 @@ export default async function handler(
 
         if (!issueNumber) return res.status(400).send("Missing issue number");
 
-        const { id, body } = await getMetadataCommentId(parseInt(issueNumber));
+        const { id, body } = await getMetadataCommentId(parseInt(issueNumber as string));
 
         if (!body || !body.includes("vote"))
-          return res.status(200).json({ votes: 0 });
+          return res.status(200).json({ upVotes: 0, downVotes: 0 });
 
         /* Destructuring the metadata and cleanedComment from the getMetadataAndCleanedComment function. */
-        const { metadata, cleanedComment } = getMetadataAndCleanedComment(body);
+        const { metadata  , cleanedComment } = getMetadataAndCleanedComment(body);
 
         return res
           .status(200)
-          .json(metadata?.votes ? metadata : { votes: 0, voters: [] });
+          .json(
+            (metadata as CommentMatadata)?.upVotes || (metadata as CommentMatadata).downVotes
+              ? metadata
+              : { upVotes: 0, downVotes: 0, voters: [] }
+          );
       default:
         throw new ApiError(400, `Method ${req.method} not allowed`);
     }
