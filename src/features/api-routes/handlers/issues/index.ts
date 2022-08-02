@@ -3,7 +3,6 @@ import { getMetadataAndCleanedComment } from "../../api/github/utils";
 import { ApiError, apiErrorHandler } from "../utils";
 
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getVoteCount } from "features/common/hooks/useGuildQueries";
 
 /**
  * `GET /issues`

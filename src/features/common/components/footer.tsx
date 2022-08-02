@@ -1,32 +1,17 @@
 import config from "config";
 
-const BETTER_LINKS = [
+const EXTERNAL_LINKS = [
   {
     label: "Homepage",
-    link: config.site.url,
+    link: config.site.externalLinks.homepage,
   },
   {
     label: "Documentation",
     link: config.site.externalLinks.docs,
   },
   {
-    label: "Discord",
-    link: `https://discord.com/invite/${config.site.externalLinks.discord}`,
-  },
-  {
-    label: "Twitter",
-    link: `https://twitter.com/${config.site.externalLinks.twitter}`,
-  },
-];
-
-const EXTERNAL_LINKS = [
-  {
-    label: "Homepage",
-    link: config.site.url,
-  },
-  {
-    label: "Add new issue",
-    link: `https://github.com/${config.github.repoOwner}/${config.github.repoName}/issues/new/choose`,
+    label: "GitHub",
+    link: `https://github.com/${config.github.repoOwner}/${config.github.repoName}`,
   },
 ];
 
@@ -35,13 +20,13 @@ export function Footer() {
     <footer>
       <div className="container mx-auto">
         <div className="border-gray-100 dark:border-zinc-800 border-b-2" />
-        <div className="grid grid-cols-1 gap-8 sm:gap-2 sm:grid-cols-3 p-4 text-gray-500 dark:text-zinc-500">
+        <div className="grid grid-cols-3 p-4 text-gray-500 dark:text-zinc-500">
           <div>
             Powered by{" "}
-            <a href="https://betterhq.org/" target="_blank" rel="noreferrer">
+            <a href="https://better.com" target="_blank" rel="noreferrer">
               Better
             </a>{" "}
-            © 2022
+            © 2021
           </div>
           <div>
             <div className="mb-2 font-medium uppercase">
@@ -60,7 +45,7 @@ export function Footer() {
           <div>
             <div className="mb-2 font-medium uppercase">Better</div>
             <ul className="space-y-1">
-              {BETTER_LINKS.map(({ label, link }) => (
+              {EXTERNAL_LINKS.map(({ label, link }) => (
                 <li key={label}>
                   <a href={link} target="_blank" rel="noreferrer">
                     {label}

@@ -1,9 +1,9 @@
-import type { Metadata , CommentMatadata } from "./types";
+import type { Metadata } from "./types";
 
-export const metadataCommentRegex = /<!-- better-meta = (.*) -->/;
+export const metadataCommentRegex = /\n\n<!-- better-meta = (.*) -->/;
 
 export function getMetadataAndCleanedComment(comment: string): {
-  metadata: Metadata | CommentMatadata;
+  metadata: Metadata;
   cleanedComment: string;
 } {
   const match = comment.match(metadataCommentRegex);
@@ -15,7 +15,7 @@ export function getMetadataAndCleanedComment(comment: string): {
 
 export function setMetadataComment(
   metadataInfoText: string,
-  metadata: Metadata | CommentMatadata
+  metadata: Metadata
 ) {
   return `${metadataInfoText}\n\n<!-- better-meta = ${JSON.stringify(
     metadata
