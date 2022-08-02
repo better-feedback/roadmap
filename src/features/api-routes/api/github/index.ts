@@ -80,3 +80,18 @@ export async function getMetadataComment(issueNumber: number) {
 
   return metadataComment;
 }
+
+export async function getMetadataCommentId(issueNumber: number) {
+  const { data = [] } = await octokit.rest.issues.listComments({
+    owner: config.github.repoOwner,
+    repo: config.github.repoName,
+    issue_number: issueNumber,
+  });
+
+  const metadataComment = data.find((comment) => {
+    const match = comment.body?.match(metadataCommentRegex);
+    return Boolean(match);
+  });
+
+  return { id: metadataComment?.id, body: metadataComment?.body };
+}

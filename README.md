@@ -1,5 +1,4 @@
-# Better
-
+# Better 
 
 ## How to submit your idea
 
@@ -30,14 +29,27 @@ Setting up your own Better project takes a few steps:
     - Add a new project, linking to your forked repo
      - Set your ENV variables (Ask us on [Discord](https://discord.com/invite/wwwwRFa6aj)!)
 
-After a succesfful deployment, point your vercel deployment to your custom URL, eg. feedback.yourdapp.com, roadmap.yourdapp.com, bounties.yourdapp.com
+After a successful deployment, point your vercel deployment to your custom URL, eg. feedback.yourdapp.com, roadmap.yourdapp.com, bounties.yourdapp.com
 
 - Copy your DNS info at `https://vercel.com/[yourproject]/[yourrepo]/settings/domains`
 - Add the info in your domain manager interface
 
 🎊 Congratulations, you just deployed your custom Better site 🎉
 
-You want to customize your site UI or got feature ideas for Better? Join our [Discord](https://discord.com/invite/wwwwRFa6aj) and let us know!
+---
+
+## How to customize your Better site
+
+Set your project name and custom footer links in this config file: `\better-app\src\config.ts`
+
+Better mirrors each Github issue based on its tags. The default tags are `open`, `inProgress`, `live`.
+If you want to set your own, edit the following files:
+-  `\better-app\src\config.ts`
+- `src/features/issues/components/issues-list-page.tsx`
+- `src/features/issues/constants.ts`
+- `src/features/issues/types.ts`
+
+You want to customize your site's UI or got feature ideas for Better? Join our [Discord](https://discord.com/invite/wwwwRFa6aj) and let us know!
 
 ---
 
@@ -60,3 +72,30 @@ npm run dev
 # or
 yarn dev
 ```
+
+---
+
+### FAQ
+
+<details>
+  <summary>How to set up Guild.xyz to allow voting with NEAR wallets</summary>
+
+1. Head to [guild.xyz](https://guild.xyz/) and create your own guild
+2. Add a new role
+3. Add an allowlist with the addresses that should be able to vote
+     * Convert NEAR addresses to HEX format (eg [here](https://www.online-toolz.com/tools/text-hex-convertor.php))
+     * Add `0x` in front of the address, and enough `0`s to fill the total string to 42
+     * Eg. `0x000000003761696d656e73638e746573746e6574`
+4. After saving and signing the Metamask request, the whitelisted addresses should be able to vote
+
+</details>
+
+<details>
+  <summary>How to set up Guild.xyz to allow voting with Ethereum / Metamask</summary>
+
+1. Head to [guild.xyz](https://guild.xyz/) and create your own guild
+2. Add a new role
+3. Add an allowlist with the addresses that should be able to vote
+4. After saving and signing the Metamask request, the whitelisted addresses should be able to vote
+
+</details>

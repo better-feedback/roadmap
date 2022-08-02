@@ -26,7 +26,7 @@ export function IssueDetails(props: { issueNumber: number }) {
       <div className="col-span-5">
         <IssueDetailsHeading issue={issue} />
       </div>
-      <div className="col-span-4">
+      <div className="col-span-5 md:col-span-4">
         <div className="prose dark:prose-invert">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>
             {issue.body}

@@ -8,7 +8,7 @@ export default function ListItemMetadata(props: { metadata: Metadata }) {
   return (
     <div className="flex flex-row items-center">
       {siteConfig.enabledChains.map((chain) => {
-        const numBounties = props.metadata.bounties.filter(
+        const numBounties = props.metadata.bounties?.filter(
           (bounty) => bounty.chain === chain
         ).length;
 

@@ -2,6 +2,10 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 
 import { chainsToApi } from "../constants";
 
+import { useConnectModal } from "@rainbow-me/rainbowkit";
+
+import { useAccount } from "wagmi";
+
 export function useWalletChainQuery() {
   return useQuery(["wallet", "chain"], () => {
     const walletChain = window.localStorage.getItem("wallet-chain");
@@ -10,6 +14,8 @@ export function useWalletChainQuery() {
 }
 
 export function useWalletIsSignedInQuery() {
+  const { isConnected } = useAccount();
+
   return useQuery(["wallet", "isSignedIn"], () => {
     const walletChain = window.localStorage.getItem("wallet-chain");
 
@@ -17,8 +23,11 @@ export function useWalletIsSignedInQuery() {
       return false;
     }
 
-    const { isSignedIn } = chainsToApi[walletChain];
-    return isSignedIn();
+    const { isSignedIn } =
+      walletChain === "near"
+        ? chainsToApi[walletChain]
+        : { isSignedIn: () => {} };
+    return walletChain === "near" ? isSignedIn() : isConnected;
   });
 }
 
@@ -37,12 +46,19 @@ export function useWalletSignedInAccountQuery() {
 
 export function useWalletSignInMutation() {
   const queryClient = useQueryClient();
+  const { openConnectModal } = useConnectModal();
 
   const walletSignInMutation = useMutation(
     async (walletChain: string) => {
-      const { signIn } = chainsToApi[walletChain];
+      if (walletChain === "near") {
+        const { signIn } = chainsToApi[walletChain];
 
-      await signIn();
+        await signIn();
+      } else {
+        if (openConnectModal) {
+          openConnectModal();
+        }
+      }
       window.localStorage.setItem("wallet-chain", walletChain);
     },
     {
