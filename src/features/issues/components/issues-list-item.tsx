@@ -6,7 +6,7 @@ import type { Issue, Label } from "../types";
 
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 
-import { useWalletSignedInAccountQuery } from "features/common/hooks/useWalletQueries";
+import { useWalletChainQuery, useWalletSignedInAccountQuery } from "features/common/hooks/useWalletQueries";
 
 import { CommentMatadata } from "./../../../features/api-routes/api/github/types";
 
@@ -20,6 +20,8 @@ import { upsertMetadataComment } from "features/api-routes/api/github";
 import { Octokit } from "octokit";
 import config from "config";
 
+import { useAccount } from "wagmi";
+
 const octokit = new Octokit({ auth: config.github.pat });
 
 type Props = {
@@ -30,8 +32,26 @@ export function IssuesListItem(props: Props) {
   const { issue } = props;
   const signedInAccountQuery = useWalletSignedInAccountQuery();
   const canVote = useVotingAccessQuery();
+  const { data: walletChain } = useWalletChainQuery()
   const addVote = useVote();
   const { data } = useIssueVoteCount(issue.number);
+
+  const { isConnected, address } = useAccount()
+
+
+
+  const hasUserVotes = (VoteType: string): boolean => {
+    return walletChain === "near" ? (data as CommentMatadata)?.voters?.includes(
+      signedInAccountQuery.data + VoteType
+    ) : (data as CommentMatadata)?.voters?.includes(
+      address + VoteType
+    )
+  }
+
+  const isUserConnected = () => {
+    return walletChain === "near" ? signedInAccountQuery.data : isConnected
+  }
+
 
   return (
     <li className="py-2 px-4 dark:hover:bg-zinc-800 hover:bg-gray-200 cursor-pointer overlow flex justify-between ">
@@ -61,21 +81,18 @@ export function IssuesListItem(props: Props) {
       <div className="flex flex-row justify-center items-center">
         <div className="flex flex-col justify-center items-center space-y-1 pr-1">
           <IoIosArrowUp
-            className={`text-[1.5rem] h-5	opacity-50 transition-all duration-300 hover:opacity-100 ${
-              (data as CommentMatadata)?.voters?.includes(
-                signedInAccountQuery.data + "_up"
-              ) && "text-[#FF6CE5] opactity-100"
+             className={`text-[1.5rem] h-5	opacity-50 transition-all duration-300 hover:opacity-100 ${hasUserVotes("_up") && "text-[#FF6CE5] opactity-100"
             }`}
             onClick={async (e) => {
               e.stopPropagation();
-              if (!signedInAccountQuery.data)
+              if (!isUserConnected())
                 return alert("You need to be signed in");
               if (!canVote.data) return alert("You don't have access to vote");
               try {
                 addVote.mutate({
                   issueNumber: issue.number,
                   isUpVote: true,
-                  walletId: signedInAccountQuery.data,
+                  walletId: walletChain === "near" ? signedInAccountQuery.data as string : address as string,
                 });
               } catch (e) {
                 console.error(e);
@@ -85,23 +102,20 @@ export function IssuesListItem(props: Props) {
           <IoIosArrowDown
             onClick={(e) => {
               e.stopPropagation();
-              if (!signedInAccountQuery.data)
+              if (!isUserConnected())
                 return alert("You need to be signed in");
               if (!canVote.data) return alert("You don't have access to vote");
               try {
                 addVote.mutate({
                   issueNumber: issue.number,
                   isUpVote: false,
-                  walletId: signedInAccountQuery.data,
+                  walletId: walletChain === "near" ? signedInAccountQuery.data as string : address as string,
                 });
               } catch (e) {
                 console.error(e);
               }
             }}
-            className={`text-[1.5rem] h-5 opacity-50 transition-all duration-300 hover:opacity-100 ${
-              (data as CommentMatadata)?.voters?.includes(
-                signedInAccountQuery.data + "_down"
-              ) && "text-red-500"
+            className={`text-[1.5rem] h-5 opacity-50 transition-all duration-300 hover:opacity-100 ${hasUserVotes("_down") && "text-red-500"
             }`}
           />
         </div>

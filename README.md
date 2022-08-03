@@ -72,3 +72,30 @@ npm run dev
 # or
 yarn dev
 ```
+
+---
+
+### FAQ
+
+<details>
+  <summary>How to set up Guild.xyz to allow voting with NEAR wallets</summary>
+
+1. Head to [guild.xyz](https://guild.xyz/) and create your own guild
+2. Add a new role
+3. Add an allowlist with the addresses that should be able to vote
+     * Convert NEAR addresses to HEX format (eg [here](https://www.online-toolz.com/tools/text-hex-convertor.php))
+     * Add `0x` in front of the address, and enough `0`s to fill the total string to 42
+     * Eg. `0x000000003761696d656e73638e746573746e6574`
+4. After saving and signing the Metamask request, the whitelisted addresses should be able to vote
+
+</details>
+
+<details>
+  <summary>How to set up Guild.xyz to allow voting with Ethereum / Metamask</summary>
+
+1. Head to [guild.xyz](https://guild.xyz/) and create your own guild
+2. Add a new role
+3. Add an allowlist with the addresses that should be able to vote
+4. After saving and signing the Metamask request, the whitelisted addresses should be able to vote
+
+</details>
