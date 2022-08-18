@@ -2,7 +2,7 @@
 
 ## How to submit your idea
 
-Visit [/better-app/issues](https://github.com/better-feedback/better-app/issues) and add a new issue.
+Visit [/roadmap/issues](https://github.com/better-feedback/roadmap/issues) and add a new issue.
 
 To list your issue on your Better board, tag the issue category as `bug` or `feature` and its status as `open`, `planned` or `inProgress`.
 
