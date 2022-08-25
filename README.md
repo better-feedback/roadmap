@@ -2,7 +2,7 @@
 
 ## How to submit your idea
 
-Visit [/better-app/issues](https://github.com/better-feedback/better-app/issues) and add a new issue.
+Visit [/roadmap/issues](https://github.com/better-feedback/roadmap/issues) and add a new issue.
 
 To list your issue on your Better board, tag the issue category as `bug` or `feature` and its status as `open`, `planned` or `inProgress`.
 
@@ -78,6 +78,7 @@ yarn dev
 ### FAQ
 
 <details>
+
   <summary>Which chains are supported?</summary>
 
 1. NEAR testnet
@@ -86,6 +87,7 @@ yarn dev
 </details>
 
 <details>
+
   <summary>How to set up Guild.xyz to allow voting with NEAR wallets</summary>
 
 1. Head to [guild.xyz](https://guild.xyz/) and create your own guild

@@ -108,9 +108,6 @@ export default function AddBounty(props: { issueNumber: number }) {
     if (walletChain === "near") {
       localStorage.setItem("isBountyAdded", "true");
 
-
-
-
       addBountyMutation.mutate({
         issueNumber: issue.url,
         issueDescription: "byebye",
@@ -175,7 +172,6 @@ export default function AddBounty(props: { issueNumber: number }) {
   if (!issue) {
     return <div>Not found</div>;
   }
-
 
   
   const isExpired = () => {
