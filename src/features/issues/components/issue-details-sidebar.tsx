@@ -29,6 +29,8 @@ import axios from "axios";
 
 
 
+
+
 export default function IssueDetailsSidebar(props: { issue: Issue }) {
   const router = useRouter();
   const walletIsSignedInQuery = useWalletIsSignedInQuery();
@@ -90,11 +92,7 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
   });
 
 
-<<<<<<< HEAD
 
-=======
-  console.log("bountySolidity : ", bountySolidity)
->>>>>>> 3468ff3a1951b2c5bf3ce299601ad0edec6f9fe9
   const { write: startWorkPoylgon } = useContractWrite({
     ...contractConfig,
     functionName: 'startWork',
@@ -107,6 +105,7 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
     onSuccess: async () => {
       setIsApplyingToWork(false)
       await postComment()
+
       alert("Successfully started working on the bounty");
       window.location.reload();
     }
@@ -205,24 +204,6 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
     })();
   }, [bountySolidity.data])
 
-<<<<<<< HEAD
-=======
-
-  const isStartWorkDisabled = () => {
-    let isDisabled = true;
-
-    if (walletChain === "near") {
-      isDisabled = !bounty ||
-        !walletIsSignedInQuery.data ||
-        bounty?.workers?.includes(walledId?.data) || isApplyingToWork
-    } else if (walletChain === "polygon") {
-      isDisabled = !isConnected || isApplyingToWork || bountySolidity?.data?.id == "" || (bountySolidity?.data?.workers?.includes(address) || bountySolidity.isLoading)
-    }
-
-    return isDisabled;
-  }
-
->>>>>>> 3468ff3a1951b2c5bf3ce299601ad0edec6f9fe9
   return (
     <aside className="col-span-5 md:col-span-1 my-4 border-t-2 border-gray-100 dark:border-zinc-800 md:my-0 md:border-t-0">
       <SidebarItem title="Status" content={<StatusLabel status={isExpired() ? "Expired" : "Open"} />} />
@@ -282,7 +263,7 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
 
                   loadBountyDetails();
                   await postComment()
-                  
+
                   alert("Successfully started working on the bounty");
                 })
                 .catch((error) => {
