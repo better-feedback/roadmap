@@ -20,7 +20,15 @@ import { upsertMetadataComment } from "features/api-routes/api/github";
 import { Octokit } from "octokit";
 import config from "config";
 
-import { useAccount } from "wagmi";
+import { useAccount, useContractRead } from "wagmi";
+import { contractConfig } from "utils/solidity/defaultConfig";
+
+import NearLogo from "../../common/components/icons/near-logo"
+import PolygonLogo from "../../common/components/icons/polygon-logo"
+import { ethers } from "ethers";
+import { viewFunction } from "features/near/api";
+import { useEffect, useState } from "react";
+import { utils } from "near-api-js";
 
 const octokit = new Octokit({ auth: config.github.pat });
 
@@ -35,6 +43,8 @@ export function IssuesListItem(props: Props) {
   const { data: walletChain } = useWalletChainQuery()
   const addVote = useVote();
   const { data } = useIssueVoteCount(issue.number);
+  const [bounty, setBounty] = useState(null);
+  const [pool, setPool] = useState("");
 
   const { isConnected, address } = useAccount()
 
@@ -53,6 +63,29 @@ export function IssuesListItem(props: Props) {
   }
 
 
+  const loadBountyDetails = () => {
+    viewFunction("getBountyByIssue", { issueId: props.issue.url })
+      .then((res) => {
+        setBounty(res);
+        setPool(utils.format.formatNearAmount(res?.pool));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const bountySolidity = useContractRead({
+    ...contractConfig,
+    functionName: "getBountyById",
+    args: props.issue.url,
+    watch: true,
+  });
+
+  useEffect(() => {
+    loadBountyDetails()
+  }, [])
+
+
   return (
     <li className="py-2 px-4 dark:hover:bg-zinc-800 hover:bg-gray-200 cursor-pointer overlow flex justify-between ">
       <Link passHref href={`/issues/${issue.number}`}>
@@ -62,6 +95,20 @@ export function IssuesListItem(props: Props) {
             <div className="text-xs">
               {`#${issue.number} opened on ${issue.created_at} by ${issue.user.login}`}
             </div>
+
+            <div className="flex w-full gap-x-2 py-2">
+              <div className="flex items-center gap-x-2">
+                <NearLogo className="h-6" />
+                <span>{bounty != null ? pool : "-"} Near</span>
+              </div>
+
+              <div className="flex items-center gap-x-2">
+                <PolygonLogo className="h-6" />
+                <span>{bountySolidity?.data?.id !== "" ? ethers.utils.formatEther(bountySolidity?.data?.pool || "0").toString() : "-"} MATIC</span>
+              </div>
+
+            </div>
+
             <div className="flex gap-2 flex-wrap mt-1">
               {issue?.labels.map((label: Label) => {
                 return (
@@ -81,8 +128,8 @@ export function IssuesListItem(props: Props) {
       <div className="flex flex-row justify-center items-center">
         <div className="flex flex-col justify-center items-center space-y-1 pr-1">
           <IoIosArrowUp
-             className={`text-[1.5rem] h-5	opacity-50 transition-all duration-300 hover:opacity-100 ${hasUserVotes("_up") && "text-[#FF6CE5] opactity-100"
-            }`}
+            className={`text-[1.5rem] h-5	opacity-50 transition-all duration-300 hover:opacity-100 ${hasUserVotes("_up") && "text-[#FF6CE5] opactity-100"
+              }`}
             onClick={async (e) => {
               e.stopPropagation();
               if (!isUserConnected())
@@ -116,9 +163,11 @@ export function IssuesListItem(props: Props) {
               }
             }}
             className={`text-[1.5rem] h-5 opacity-50 transition-all duration-300 hover:opacity-100 ${hasUserVotes("_down") && "text-red-500"
-            }`}
+              }`}
           />
         </div>
+
+
         <div className="flex flex-col justify-center items-center text-sm">
           <span>{(data as CommentMatadata)?.upVotes}</span>
           <span>{(data as CommentMatadata)?.downVotes}</span>

@@ -67,9 +67,6 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
     return isNotConnected
   }
 
-
-
-
   const postComment = async () => {
     if (user) {
       try {
@@ -95,7 +92,6 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
   });
 
 
-  console.log("bountySolidity : ", bountySolidity)
 
   const { write: startWorkPoylgon } = useContractWrite({
     ...contractConfig,
@@ -149,6 +145,22 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
     }
   }
 
+   const isStartWorkDisabled = () => {
+    let isDisabled = true;
+
+
+    if (walletChain === "near") {
+      isDisabled = !bounty ||
+        !walletIsSignedInQuery.data ||
+        bounty?.workers?.includes(walledId?.data) || isApplyingToWork
+    } else if (walletChain === "polygon") {
+      isDisabled = !isConnected || isApplyingToWork || bountySolidity?.data?.id == "" || (bountySolidity?.data?.workers?.includes(address) || bountySolidity.isLoading)
+    }
+
+
+    return isDisabled;
+  }
+
   /* A hook that is called when the component is mounted.
   In order to fetch the bounty stored in the contract
  */
@@ -192,27 +204,6 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
     })();
   }, [bountySolidity.data])
 
-
-  const isStartWorkDisabled = () => {
-    let isDisabled = true;
-
-
-    if (walletChain === "near") {
-      isDisabled = !bounty ||
-        !walletIsSignedInQuery.data ||
-        bounty?.workers?.includes(walledId?.data) || isApplyingToWork
-    } else if (walletChain === "polygon") {
-      isDisabled = !isConnected || isApplyingToWork || bountySolidity?.data?.id == "" || (bountySolidity?.data?.workers?.includes(address) || bountySolidity.isLoading)
-    }
-
-
-    return isDisabled;
-  }
-
-
-
-
-
   return (
     <aside className="col-span-5 md:col-span-1 my-4 border-t-2 border-gray-100 dark:border-zinc-800 md:my-0 md:border-t-0">
       <SidebarItem title="Status" content={<StatusLabel status={isExpired() ? "Expired" : "Open"} />} />
@@ -229,7 +220,7 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
           </>
         }
       />
-      {bounty || bountySolidity?.data?.id !== "" && (
+      {bounty !== null || bountySolidity?.data?.id !== "" && (
         <SidebarItem
           title="Deadline"
           content={<><div>Near: {bounty?.deadline ? parseDate(bounty?.deadline) : "-"}</div>

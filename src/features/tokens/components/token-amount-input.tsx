@@ -7,6 +7,9 @@ import SelectTokenModal from "./select-token-modal";
 import { useWalletChainQuery } from "features/common/hooks/useWalletQueries";
 import { useTokensQuery } from "../hooks/useTokensQueries";
 
+import NearLogo from "../../common/components/icons/near-logo"
+import PolygonLogo from "../../common/components/icons/near-logo"
+
 import type { Token } from "../types";
 
 export default function TokenAmountInput(props: {
