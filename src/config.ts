@@ -22,7 +22,7 @@ export const nearChainConfig = {
 };
 
 export const siteConfig = {
-  enabledChains: ["near"],
+  enabledChains: ["near" , "polygon"],
   projectName: "Better",
   title: "Better Roadmap",
   metaDescription: "Better Roadmap",

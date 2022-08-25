@@ -4,6 +4,7 @@ import type { ChainApi } from "./types";
 
 export const chains = {
   NEAR: "near",
+  POLYGON: "polygon",
 };
 
 export const chainsToApi: {
@@ -23,5 +24,17 @@ export const chainsToApi: {
     getBountyById: nearApi.getBountyById,
     // Tokens API
     getTokens: nearApi.getTokens,
+  },
+  [chains.POLYGON]: {
+    getTokens: () => {
+      return [
+        {
+          symbol: "MATIC",
+          address: "0x",
+          decimals: 18,
+          name: "Polygon Token",
+        },
+      ];
+    },
   },
 };

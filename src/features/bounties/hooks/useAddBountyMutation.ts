@@ -14,6 +14,8 @@ export default function useAddBountyMutation() {
       token: string;
       amount: string;
       maxDeadline: number;
+      startedAt: number;
+      project: string;
     }) => {
       const { addBounty } = chainsToApi[params.chain];
 

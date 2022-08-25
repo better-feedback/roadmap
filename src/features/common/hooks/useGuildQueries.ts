@@ -3,6 +3,7 @@ import axios from "axios";
 import { Issue } from "features/issues/types";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { nearAccountToHex } from "utils/helpers";
+import { useAccount } from "wagmi";
 import { chainsToApi } from "../constants";
 
 /*
@@ -11,29 +12,45 @@ import { chainsToApi } from "../constants";
  */
 export function useVotingAccessQuery() {
   const walletChain = window.localStorage.getItem("wallet-chain");
-
+  const { address } = useAccount();
   return useQuery("hasVotingAccess", async () => {
     if (!walletChain) {
       return null;
     }
-    const { getAccountId } = chainsToApi[walletChain];
 
-    return getAccountId().then(async (accountId) => {
-      const account = nearAccountToHex([accountId]);
+    let canVote: boolean = false;
 
-      //Getting guild roles data
+    if (walletChain === "near") {
+      const { getAccountId } = chainsToApi[walletChain];
+
+      return getAccountId().then(async (accountId) => {
+        const account = nearAccountToHex([accountId]);
+
+        //Getting guild roles data
+        const guildData = await guild.getUserAccess(
+          parseInt(process.env.NEXT_PUBLIC_GUILD_ID as string),
+          account[0]
+        );
+
+        //Getting role id by chain
+        const roleId: string = process.env.NEXT_PUBLIC_NEAR_ROLE_ID as string;
+
+        //Checking if user has access to vote or not
+        guildData.forEach((access) => {
+          if (access.roleId === parseInt(roleId)) {
+            canVote = access.access;
+          }
+        });
+        return canVote;
+      });
+    } else {
       const guildData = await guild.getUserAccess(
-        parseInt(process.env.NEXT_PUBLIC_GUILD_ID),
-        account[0]
+        parseInt(process.env.NEXT_PUBLIC_GUILD_ID as string),
+        address as string
       );
 
       //Getting role id by chain
-      const roleId: string =
-        walletChain === "near"
-          ? process.env.NEXT_PUBLIC_NEAR_ROLE_ID
-          : process.env.NEXT_PUBLIC_ROLE_ID;
-
-      let canVote: boolean = false;
+      const roleId: string = process.env.NEXT_PUBLIC_ROLE_ID as string;
 
       //Checking if user has access to vote or not
       guildData.forEach((access) => {
@@ -41,8 +58,9 @@ export function useVotingAccessQuery() {
           canVote = access.access;
         }
       });
+
       return canVote;
-    });
+    }
   });
 }
 

@@ -9,7 +9,7 @@ export function useIssuesQuery(issueType: IssueType, page: number) {
   return useQuery(["issues", issueType, page], async () => {
     const issues = await getIssues(issueType, {
       page,
-      perPage: 10,
+      perPage: 50,
     });
 
     const issueVotes: any = {};
