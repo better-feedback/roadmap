@@ -4,6 +4,8 @@ export type BountyParams = {
   token: string;
   amount: string;
   maxDeadline: number;
+  startedAt: number;
+  project: string;
 };
 
 export type Bounty = {

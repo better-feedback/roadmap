@@ -86,8 +86,8 @@ export function IssuesListItem(props: Props) {
             onClick={async (e) => {
               e.stopPropagation();
               if (!isUserConnected())
-                return alert("You need to be signed in");
-              if (!canVote.data) return alert("You don't have access to vote");
+                return alert("To be able to vote, sign in to your wallet and get your address whitelisted by the team");
+              if (!canVote.data) return alert("To get vote access, get your address whitelisted by the team");
               try {
                 addVote.mutate({
                   issueNumber: issue.number,
@@ -103,8 +103,8 @@ export function IssuesListItem(props: Props) {
             onClick={(e) => {
               e.stopPropagation();
               if (!isUserConnected())
-                return alert("You need to be signed in");
-              if (!canVote.data) return alert("You don't have access to vote");
+                return alert("To be able to vote, sign in to your wallet and get your address whitelisted by the team");
+              if (!canVote.data) return alert("To get vote access, get your address whitelisted by the team");
               try {
                 addVote.mutate({
                   issueNumber: issue.number,

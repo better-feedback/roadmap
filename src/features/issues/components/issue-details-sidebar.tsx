@@ -9,10 +9,14 @@ import {
   useWalletSignedInAccountQuery,
 } from "features/common/hooks/useWalletQueries";
 
+import { useUser } from '@auth0/nextjs-auth0'
 
 import { contractConfig } from "utils/solidity/defaultConfig"
 
 import { utils } from "near-api-js";
+
+
+
 
 import type { Issue } from "../types";
 import type { Bounty } from "../../bounties/types";
@@ -21,7 +25,7 @@ import { parseDate } from "../../../utils/helpers.js";
 import { QueryObserverIdleResult } from "react-query";
 import { useContractRead, useAccount, useContractWrite } from "wagmi";
 import { ethers } from "ethers";
-
+import axios from "axios";
 
 
 
@@ -39,7 +43,47 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
   const [isApplyingToWork, setIsApplyingToWork] = useState(false);
 
   // Getting logged in user wallet address
-  const { address , isConnected } = useAccount()
+  const { address, isConnected } = useAccount()
+
+  const { user, error, isLoading } = useUser();
+
+
+  const isNotConnectedToWallet = () => {
+    let isNotConnected = true;
+
+    const walletChainFromLocalStorage = localStorage.getItem("wallet-chain")
+
+
+
+
+    if (walletChainFromLocalStorage === "near") {
+      isNotConnected = !walletIsSignedInQuery.data
+    } else if (walletChainFromLocalStorage === "polygon") {
+      isNotConnected = !isConnected
+    }
+
+    return isNotConnected
+  }
+
+
+
+
+  const postComment = async () => {
+    if (user) {
+      try {
+        const result = await axios.post("/api/comment/startWorkComment", {
+          id: user.sub,
+          issueNumber: props.issue.number
+        }) as any
+
+
+        console.log("Comment posted")
+
+      } catch (e) {
+        console.log(error)
+      }
+    }
+  }
 
   const bountySolidity = useContractRead({
     ...contractConfig,
@@ -49,6 +93,7 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
   });
 
 
+  console.log("bountySolidity : ", bountySolidity)
   const { write: startWorkPoylgon } = useContractWrite({
     ...contractConfig,
     functionName: 'startWork',
@@ -58,8 +103,9 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
       setIsApplyingToWork(false)
       alert(error)
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       setIsApplyingToWork(false)
+      await postComment()
       alert("Successfully started working on the bounty");
       window.location.reload();
     }
@@ -78,6 +124,26 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
         console.log(error);
       });
   };
+
+
+  const isExpired = () => {
+    const localStorageChain = localStorage.getItem("wallet-chain")
+
+    if (!localStorageChain) {
+      return false
+    }
+
+    if (localStorageChain === "near") {
+      return !bounty ? false : Math.floor(Date.now() / 1000) > parseInt(bounty?.deadline);
+    } else {
+      if (bountySolidity?.data?.id !== "") {
+
+        return Math.floor(Date.now() / 1000) > parseInt(bountySolidity?.data?.deadline);
+      } else {
+        return false
+      }
+    }
+  }
 
   /* A hook that is called when the component is mounted.
   In order to fetch the bounty stored in the contract
@@ -126,25 +192,20 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
   const isStartWorkDisabled = () => {
     let isDisabled = true;
 
-    
     if (walletChain === "near") {
       isDisabled = !bounty ||
-        !walletIsSignedInQuery.data || 
-        bounty?.workers?.includes(walledId?.data as string) || isApplyingToWork
-    } else if(walletChain === "polygon") {
+        !walletIsSignedInQuery.data ||
+        bounty?.workers?.includes(walledId?.data) || isApplyingToWork
+    } else if (walletChain === "polygon") {
       isDisabled = !isConnected || isApplyingToWork || bountySolidity?.data?.id == "" || (bountySolidity?.data?.workers?.includes(address) || bountySolidity.isLoading)
     }
-    
 
     return isDisabled;
   }
 
-
-
-
   return (
     <aside className="col-span-5 md:col-span-1 my-4 border-t-2 border-gray-100 dark:border-zinc-800 md:my-0 md:border-t-0">
-      <SidebarItem title="Status" content={<StatusLabel status="open" />} />
+      <SidebarItem title="Status" content={<StatusLabel status={isExpired() ? "Expired" : "Open"} />} />
       <SidebarItem
         title="Total bounty sum"
         content={
@@ -153,15 +214,17 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
               {!bounty ? "-" : pool + " Near"} - ${poolInDollars}
             </div>
             <div>
-              {bountySolidity?.data?.id === "" || bountySolidity.isLoading ? "-" : ethers.utils.formatEther(bountySolidity?.data?.pool).toString() + " Matic"} - ${maticPriceInDollars}
+              {bountySolidity?.data?.id === "" || bountySolidity.isLoading ? "-" : ethers.utils.formatEther(bountySolidity?.data?.pool ? bountySolidity?.data?.pool : 0).toString() + " Matic"} - ${maticPriceInDollars}
             </div>
           </>
         }
       />
-      {bounty && (
+      {bounty || bountySolidity?.data?.id !== "" && (
         <SidebarItem
           title="Deadline"
-          content={<div>{parseDate(bounty?.deadline)}</div>}
+          content={<><div>Near: {bounty?.deadline ? parseDate(bounty?.deadline) : "-"}</div>
+            <div>Polygon: {bountySolidity?.data?.id !== "" || bountySolidity.isLoading ? parseDate(bountySolidity?.data?.deadline) : "-"}</div>
+          </>}
         />
       )}
       <SidebarItem
@@ -181,22 +244,25 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
           onClick={() =>
             router.push(`/issues/${props.issue.number}/add-bounty`)
           }
-          disabled={!walletIsSignedInQuery.data || !isConnected}
+          disabled={isNotConnectedToWallet() || isExpired()}
         >
           Add Bounty
         </Button>
 
         <Button
-          onClick={() => {
+          onClick={async () => {
             setIsApplyingToWork(true);
 
             /* Calling the startWork function in the contract. */
             if (walletChain === "near") {
 
               callFunction("startWork", { issueId: props.issue.url })
-                .then(() => {
+                .then(async () => {
                   setIsApplyingToWork(false);
+
                   loadBountyDetails();
+                  await postComment()
+                  
                   alert("Successfully started working on the bounty");
                 })
                 .catch((error) => {
@@ -209,13 +275,13 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
             }
           }}
           disabled={
-            isStartWorkDisabled()
+            isStartWorkDisabled() || isExpired()
           }
         >
           {isApplyingToWork ? "Loading..." : "Start Work"}
         </Button>
       </div>
-      {(!walletIsSignedInQuery.data || !isConnected) && (
+      {(isNotConnectedToWallet()) && (
         <p className="text-xs text-center mt-2 text-gray-500 dark:text-zinc-500">
           You need to connect a wallet to add a bounty.
         </p>

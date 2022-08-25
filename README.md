@@ -78,6 +78,16 @@ yarn dev
 ### FAQ
 
 <details>
+
+  <summary>Which chains are supported?</summary>
+
+1. NEAR testnet
+2. Polygon testnet
+
+</details>
+
+<details>
+
   <summary>How to set up Guild.xyz to allow voting with NEAR wallets</summary>
 
 1. Head to [guild.xyz](https://guild.xyz/) and create your own guild

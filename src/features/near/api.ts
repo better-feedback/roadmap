@@ -86,10 +86,17 @@ export async function addBounty(params: {
   issueNumber: number;
   amount: number;
   maxDeadline: number;
+  startedAt: number;
+  project: string;
 }) {
   callFunction(
     "fundBounty",
-    { issueId: params.issueNumber, deadline: params.maxDeadline.toString() },
+    {
+      issueId: params.issueNumber,
+      deadline: params.maxDeadline.toString(),
+      project: params.project,
+      startedAt: params.startedAt.toString(),
+    },
     params.amount.toString()
   )
     .then((response) => {})

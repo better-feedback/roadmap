@@ -1,6 +1,7 @@
 import React from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
+import { UserProvider } from '@auth0/nextjs-auth0';
 
 import "../styles/globals.css";
 
@@ -48,15 +49,17 @@ export default function App({ Component, pageProps }: AppProps) {
 
 
   return (
-    <WagmiConfig client={wagmiClient}>
-      <RainbowKitProvider chains={chains} theme={darkTheme({
-        accentColor: '#EC4899',
-      })}>
-        <QueryClientProvider client={queryClient}>
-          <Component {...pageProps} />
-          <ReactQueryDevtools />
-        </QueryClientProvider>
-      </RainbowKitProvider>
-    </WagmiConfig>
+    <UserProvider>
+      <WagmiConfig client={wagmiClient}>
+        <RainbowKitProvider chains={chains} theme={darkTheme({
+          accentColor: '#EC4899',
+        })}>
+          <QueryClientProvider client={queryClient}>
+            <Component {...pageProps} />
+            <ReactQueryDevtools />
+          </QueryClientProvider>
+        </RainbowKitProvider>
+      </WagmiConfig>
+    </UserProvider>
   );
 }

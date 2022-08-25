@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useLayoutEffect } from "react";
 
 import FormInput from "features/common/components/form-input";
 import LabeledInput from "features/common/components/labeled-input";
@@ -30,6 +30,7 @@ export default function AddBounty(props: { issueNumber: number }) {
 
   const [isCreationLoading, setIsCreationLoading] = React.useState(false);
   const [isLoadingSigner, setIsLoadingSigner] = React.useState(false);
+  const [minimumDeadline, setMinimumDeadline] = React.useState("");
 
   const { data: issue, isLoading } = useIssueDetailsQuery(props.issueNumber);
   const { data: walletChain = "" } = useWalletChainQuery();
@@ -45,8 +46,11 @@ export default function AddBounty(props: { issueNumber: number }) {
     ...contractConfig,
     functionName: 'fundBounty',
     args: [issue?.url, maxDeadline
-      ? new Date(new Date(maxDeadline).setUTCHours(23, 59, 59, 59)).getTime().toString()
-      : "0"],
+      ? Math.floor((new Date(new Date(maxDeadline).setUTCHours(23, 59, 59, 59)).getTime() / 1000)).toString()
+      : "0",
+    Math.floor(Date.now() / 1000).toString(),
+    (process.env.NEXT_PUBLIC_PROJECT as string).toLowerCase()
+    ],
     overrides: {
       value: ethers.utils.parseEther(amount ? amount : "0"),
     },
@@ -72,7 +76,7 @@ export default function AddBounty(props: { issueNumber: number }) {
 
 
 
-
+  console.log(bountyPolygon)
 
 
 
@@ -109,8 +113,10 @@ export default function AddBounty(props: { issueNumber: number }) {
         issueDescription: "byebye",
         chain: walletChain,
         token: token.address,
+        startedAt: Math.floor(Date.now() / 1000),
+        project: (process.env.NEXT_PUBLIC_PROJECT as string).toLowerCase(),
         maxDeadline: maxDeadline
-          ? new Date(new Date(maxDeadline).setUTCHours(23, 59, 59, 59)).getTime()
+          ? new Date(new Date(maxDeadline).setUTCHours(23, 59, 59, 59)).getTime() / 1000
           : 0,
         amount,
       });
@@ -142,6 +148,23 @@ export default function AddBounty(props: { issueNumber: number }) {
       });
   }, [issue]);
 
+
+  useLayoutEffect(() => {
+    let today = new Date();
+    let dd = today.getDate() + 1;
+    let mm = today.getMonth() + 1; //January is 0 so need to add 1 to make it 1!
+    let yyyy = today.getFullYear();
+    if (dd < 10) {
+      dd = "0" + dd;
+    }
+    if (mm < 10) {
+      mm = "0" + mm;
+    }
+
+    let tomorrow = yyyy + "-" + mm + "-" + dd;
+    setMinimumDeadline(tomorrow);
+  }, [])
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -150,7 +173,25 @@ export default function AddBounty(props: { issueNumber: number }) {
     return <div>Not found</div>;
   }
 
+  
+  const isExpired = () => {
+    const localStorageChain = localStorage.getItem("wallet-chain")
 
+    if (!localStorageChain) {
+      return false
+    }
+
+    if (localStorageChain === "near") {
+      return !doesBountyExist ? false : Math.floor(Date.now() / 1000) > parseInt(doesBountyExist?.deadline);
+    } else {
+      if (bountyPolygon?.data?.id !== "") {
+
+        return Math.floor(Date.now() / 1000) > parseInt(bountyPolygon?.data?.deadline);
+      } else {
+        return false
+      }
+    }
+  }
 
   const showDatePicker = () => {
     return walletChain === "near" ? !doesBountyExist : bountyPolygon?.data?.id === ""
@@ -174,17 +215,17 @@ export default function AddBounty(props: { issueNumber: number }) {
           <div>#{issue.number}</div>
         </LabeledInput>
         <LabeledInput label="Status">
-          <div>{walletChain === "near" ? (!doesBountyExist ? "NOBOUNTY" : "OPEN") : (bountyPolygon?.data?.id === "" ? "NOBOUNTY" : "OPEN")}</div>
+          <div>{walletChain === "near" ? isExpired() ? "EXPIRED" : (!doesBountyExist ? "NOBOUNTY" : "OPEN") : (bountyPolygon?.data?.id === "" ? "NOBOUNTY" : "OPEN")}</div>
         </LabeledInput>
-        <LabeledInput label="Deadline">
-          <div>{walletChain === "near" ? (!doesBountyExist ? "-" : parseDate(doesBountyExist?.deadline)) : (bountyPolygon?.data?.id === "" ? "-" : parseDate(bountyPolygon?.data?.deadline))}</div>
+        <LabeledInput label="Started At">
+          <div>{walletChain === "near" ? (!doesBountyExist ? "-" : parseDate(doesBountyExist?.startedAt)) : (bountyPolygon?.data?.id === "" ? "-" : parseDate(bountyPolygon?.data?.startedAt))}</div>
         </LabeledInput>
         {showDatePicker() && (
           <LabeledInput label="Max. deadline" className="col-span-4">
             <FormInput
               type="date"
               value={maxDeadline}
-              min={0}
+              min={minimumDeadline}
               onChange={handleChangeMaxDeadline}
               className="w-full"
               required
@@ -202,7 +243,7 @@ export default function AddBounty(props: { issueNumber: number }) {
         <Button
           className="w-full col-span-4 mt-4"
           onClick={handleClickAddBounty}
-          disabled={addBountyMutation.isLoading}
+          disabled={addBountyMutation.isLoading || isExpired()}
         >
           {addBountyMutation.isLoading || writing
             ? "Creating bounty..."
