@@ -40,8 +40,6 @@ export default function AddBounty(props: { issueNumber: number }) {
 
 
 
-
-
   const { data, isError, isLoading: writing, write } = useContractWrite({
     ...contractConfig,
     functionName: 'fundBounty',
@@ -74,23 +72,6 @@ export default function AddBounty(props: { issueNumber: number }) {
     watch: true,
   });
 
-
-
-  console.log(bountyPolygon)
-
-
-
-
-  useEffect(() => {
-    let issueNumber = window.location.pathname.split("/")[2];
-    if (!walletChain) {
-      router.replace(`/issues/${issueNumber}`);
-    }
-  }, [walletChain]);
-
-
-
-
   function handleChangeMaxDeadline(event: React.ChangeEvent<HTMLInputElement>) {
     setMaxDeadline(event.target.value);
   }
@@ -106,7 +87,10 @@ export default function AddBounty(props: { issueNumber: number }) {
 
 
     if (walletChain === "near") {
-      localStorage.setItem("isBountyAdded", "true");
+      localStorage.setItem("isBountyAdded", issue?.number.toString());
+
+
+
 
       addBountyMutation.mutate({
         issueNumber: issue.url,
@@ -127,10 +111,18 @@ export default function AddBounty(props: { issueNumber: number }) {
   }
 
   useEffect(() => {
+    const walletChainFromLocalStorage = localStorage.getItem("wallet-chain");
+    if (walletChainFromLocalStorage == null) {
+      const redirectUrl = window.location.href;
+      location.assign(redirectUrl.replace("/add-bounty", ""))
+    }
+  }, [walletChain]);
+
+  useEffect(() => {
     const isBountyAdded = localStorage.getItem("isBountyAdded");
-    if (isBountyAdded === "true") {
+    if (isBountyAdded !== null) {
       localStorage.removeItem("isBountyAdded");
-      router.replace(`/issues/${props.issueNumber}`);
+      router.replace(`/issues/${isBountyAdded}`);
     }
   }, []);
 
@@ -148,6 +140,13 @@ export default function AddBounty(props: { issueNumber: number }) {
       });
   }, [issue]);
 
+  useEffect(() => {
+    const walletChainFromLocalStorage = localStorage.getItem("wallet-chain");
+    if (!walletChainFromLocalStorage) {
+      const issueNumber = router.pathname.split("/")[2];
+      router.replace(`/issues/${issueNumber}`);
+    }
+  }, [walletChain]);
 
   useLayoutEffect(() => {
     let today = new Date();
@@ -173,7 +172,8 @@ export default function AddBounty(props: { issueNumber: number }) {
     return <div>Not found</div>;
   }
 
-  
+
+
   const isExpired = () => {
     const localStorageChain = localStorage.getItem("wallet-chain")
 

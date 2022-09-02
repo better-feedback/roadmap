@@ -1,7 +1,5 @@
 import Link from "next/link";
 
-import ListItemMetadata from "./list-item-metadata";
-
 import type { Issue, Label } from "../types";
 
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
@@ -92,18 +90,18 @@ export function IssuesListItem(props: Props) {
         <div className="flex flex-row justify-between items-center">
           <div className="flex flex-col">
             <h3 className="font-semibold">{issue.title}</h3>
-            <div className="text-xs">
+            <div className="py-1 text-xs">
               {`#${issue.number} opened on ${issue.created_at} by ${issue.user.login}`}
             </div>
 
-            <div className="flex w-full gap-x-2 py-2">
+            <div className="flex w-full gap-x-2 py-1 text-xs">
               <div className="flex items-center gap-x-2">
-                <NearLogo className="h-6" />
+                <NearLogo className="h-3 dark:fill-white" />
                 <span>{bounty != null ? pool : "-"} Near</span>
               </div>
 
               <div className="flex items-center gap-x-2">
-                <PolygonLogo className="h-6" />
+                <PolygonLogo className="h-3 dark:fill-white" />
                 <span>{bountySolidity?.data?.id !== "" ? ethers.utils.formatEther(bountySolidity?.data?.pool || "0").toString() : "-"} MATIC</span>
               </div>
 
@@ -124,17 +122,20 @@ export function IssuesListItem(props: Props) {
           </div>
         </div>
       </Link>
-      <ListItemMetadata metadata={issue.metadata} />
       <div className="flex flex-row justify-center items-center">
-        <div className="flex flex-col justify-center items-center space-y-1 pr-1">
+        <div className="flex flex-col justify-center items-center space-y-4 pr-1">
           <IoIosArrowUp
             className={`text-[1.5rem] h-5	opacity-50 transition-all duration-300 hover:opacity-100 ${hasUserVotes("_up") && "text-[#FF6CE5] opactity-100"
               }`}
             onClick={async (e) => {
+
+
               e.stopPropagation();
+
+
               if (!isUserConnected())
                 return alert("To be able to vote, sign in to your wallet and get your address whitelisted by the team");
-              if (!canVote.data) return alert("To get vote access, get your address whitelisted by the team");
+              if ((process.env.NEXT_PUBLIC_USE_WHITELIST as string === 'true') && !canVote.data) return alert("To get vote access, get your address whitelisted by the team");
               try {
                 addVote.mutate({
                   issueNumber: issue.number,
@@ -151,7 +152,9 @@ export function IssuesListItem(props: Props) {
               e.stopPropagation();
               if (!isUserConnected())
                 return alert("To be able to vote, sign in to your wallet and get your address whitelisted by the team");
-              if (!canVote.data) return alert("To get vote access, get your address whitelisted by the team");
+
+
+              if ((process.env.NEXT_PUBLIC_USE_WHITELIST as string === 'true') && !canVote.data) return alert("To get vote access, get your address whitelisted by the team");
               try {
                 addVote.mutate({
                   issueNumber: issue.number,
@@ -167,8 +170,7 @@ export function IssuesListItem(props: Props) {
           />
         </div>
 
-
-        <div className="flex flex-col justify-center items-center text-sm">
+        <div className="flex flex-col justify-center items-center space-y-4 text-sm">
           <span>{(data as CommentMatadata)?.upVotes}</span>
           <span>{(data as CommentMatadata)?.downVotes}</span>
         </div>

@@ -34,6 +34,8 @@ import axios from "axios";
 export default function IssueDetailsSidebar(props: { issue: Issue }) {
   const router = useRouter();
   const walletIsSignedInQuery = useWalletIsSignedInQuery();
+  const walletId = useWalletSignedInAccountQuery()
+
   const walledId = useWalletSignedInAccountQuery();
   const { data: walletChain } = useWalletChainQuery()
   const [bounty, setBounty] = useState<Bounty | null>(null);
@@ -67,22 +69,47 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
     return isNotConnected
   }
 
+  const getWalletId = () => {
+    const walletChain = localStorage.getItem("wallet-chain")
+
+    let connectedWalletId;
+
+    if (walletChain === "near") {
+
+      connectedWalletId = walletId.data
+    } else if (walletChain === "polygon") {
+      connectedWalletId = address
+    } else {
+      connectedWalletId = "Unknown"
+    }
+
+    return connectedWalletId
+  }
+
+
   const postComment = async () => {
-    if (user) {
-      try {
-        const result = await axios.post("/api/comment/startWorkComment", {
-          id: user.sub,
-          issueNumber: props.issue.number
-        }) as any
+
+    try {
+      const result = await axios.post("/api/comment/startWorkComment", {
+        id: user ? user.sub : null,
+        issueNumber: props.issue.number,
+        isGitAuthed: user ? true : false,
+        walletId: getWalletId()
+      }) as any
 
 
-        console.log("Comment posted")
+      console.log(props.issue.html_url)
 
-      } catch (e) {
-        console.log(error)
-      }
+      setTimeout(() => {
+        window.open(props.issue.html_url, "_blank")
+      })
+      console.log("Comment posted")
+
+    } catch (e) {
+      console.log(e)
     }
   }
+
 
   const bountySolidity = useContractRead({
     ...contractConfig,
@@ -106,8 +133,9 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
       setIsApplyingToWork(false)
       await postComment()
 
-      alert("Successfully started working on the bounty");
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 300)
     }
   })
 
@@ -145,7 +173,7 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
     }
   }
 
-   const isStartWorkDisabled = () => {
+  const isStartWorkDisabled = () => {
     let isDisabled = true;
 
 
@@ -260,16 +288,15 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
               callFunction("startWork", { issueId: props.issue.url })
                 .then(async () => {
                   setIsApplyingToWork(false);
-
-                  loadBountyDetails();
                   await postComment()
+                  loadBountyDetails();
 
-                  alert("Successfully started working on the bounty");
                 })
                 .catch((error) => {
                   setIsApplyingToWork(false);
                   alert(error);
                 });
+
             }
             else {
               startWorkPoylgon()

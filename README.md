@@ -1,40 +1,42 @@
-# Better 
+# Better
 
 ## How to submit your idea
 
 Visit [/roadmap/issues](https://github.com/better-feedback/roadmap/issues) and add a new issue.
 
-To list your issue on your Better board, tag the issue category as `bug` or `feature` and its status as `open`, `planned` or `inProgress`.
+To list an issue on your Better board, tag it as `bug` or `feature` and its status as `open`, `inProgress` or `live`.
 
-Your issue should now appear on [better.betterhq.org](https://better.betterhq.org/).
+Your issue now appears on [roadmap.betterhq.org](https://roadmap.betterhq.org/) and you can
 
-You can now:
+👉 login with your NEAR or Polygon wallet
 
-👉 login with Discord and vote on your favorite issue
+👉 vote on your favorite issue, after getting whitelisted by the team
 
 👉 add funds to the issue to start a bounty
 
-👉 work on a bounty and claim the bounty pool once finished.
+👉 work on a bounty and claim the bounty pool.
 
 ---
 
 ## How to set up Better for your organization
 
-Better mirrors your [Github issues](https://github.com/better-feedback/better-app/issues) to a [hosted website](https://better.betterhq.org/), which allows your community to vote on them, fund them as bounties and claim the pooled funds for implementing them. Issues could range from feature requests, to DAO proposals or content marketing ideas.
+Better mirrors your [Github issues](https://github.com/better-feedback/roadmap/issues) to a [hosted website](https://roadmap.betterhq.org/), which allows your community to vote on them, fund them as bounties and claim the pooled funds for implementing them. Issues can range from feature requests, to content marketing ideas and DAO grant proposals.
 
 Setting up your own Better project takes a few steps:
 
-- Fork the [Better repo](https://github.com/better-feedback/better-app)
-- Set up [Vercel]([url](https://vercel.com/))
-    - Add a new project, linking to your forked repo
-     - Set your ENV variables (Ask us on [Discord](https://discord.com/invite/wwwwRFa6aj)!)
+- Fork the [Better repo](https://github.com/better-feedback/roadmap)
+- Host the site by creating a project on [Vercel]([url](https://vercel.com/))
+    - Set your ENV variables based on `./.env.example` (Got any questions? Hit us up on [Discord](https://discord.com/invite/wwwwRFa6aj)!)
 
-After a successful deployment, point your vercel deployment to your custom URL, eg. feedback.yourdapp.com, roadmap.yourdapp.com, bounties.yourdapp.com
+After a successful deployment, point your Vercel deployment to your custom URL: eg. feedback.yourdapp.com, roadmap.yourdapp.com, bounties.yourdapp.com
 
 - Copy your DNS info at `https://vercel.com/[yourproject]/[yourrepo]/settings/domains`
-- Add the info in your domain manager interface
+- Add the info to your domain manager
+- Send us your domain name on [Discord](https://discord.com/invite/wwwwRFa6aj), so we can whitelist your domain for github authentication!
 
-🎊 Congratulations, you just deployed your custom Better site 🎉
+🎊 Congratulations, you are hosting your own Better board 🎉
+
+- When using a private repo, make sure to add our notification bot `betterhq-bot` as contributor.
 
 ---
 
@@ -44,7 +46,7 @@ Set your project name and custom footer links in this config file: `\better-app\
 
 Better mirrors each Github issue based on its tags. The default tags are `open`, `inProgress`, `live`.
 If you want to set your own, edit the following files:
--  `\better-app\src\config.ts`
+- `\better-app\src\config.ts`
 - `src/features/issues/components/issues-list-page.tsx`
 - `src/features/issues/constants.ts`
 - `src/features/issues/types.ts`
@@ -78,7 +80,6 @@ yarn dev
 ### FAQ
 
 <details>
-
   <summary>Which chains are supported?</summary>
 
 1. NEAR testnet
@@ -87,7 +88,6 @@ yarn dev
 </details>
 
 <details>
-
   <summary>How to set up Guild.xyz to allow voting with NEAR wallets</summary>
 
 1. Head to [guild.xyz](https://guild.xyz/) and create your own guild
@@ -107,5 +107,40 @@ yarn dev
 2. Add a new role
 3. Add an allowlist with the addresses that should be able to vote
 4. After saving and signing the Metamask request, the whitelisted addresses should be able to vote
+
+</details>
+
+<details>
+  <summary>How to disable the voting whitelist</summary>
+
+Set `NEXT_PUBLIC_USE_WHITELIST = FALSE` in your environmental variables in your Vercel settings at `https://vercel.com/[yourproject]/[yourrepo]/settings/environment-variables`.
+
+</details>
+
+<details>
+  <summary>Can I host a Better board from a private repo?</summary>
+
+Yes! Hosting a private repo allows you to keep issues private by default, until tagged to appear on the hosted site.
+
+When using a private one, make sure to add our Github bot `betterhq-bot` as contributor to your repo.
+
+</details>
+
+<details>
+  <summary>How to edit the issue labels?</summary>
+
+  Better mirrors each Github issue based on its tags. The default tags are `open`, `inProgress`, `live`.
+  If you want to set your own, edit the following files:
+  - `\better-app\src\config.ts`
+  - `src/features/issues/components/issues-list-page.tsx`
+  - `src/features/issues/constants.ts`
+  - `src/features/issues/types.ts`
+
+</details>
+
+<details>
+  <summary>How to set custom Header text and Footer links?</summary>
+
+Set your project name and custom footer links in this config file: `\better-app\src\config.ts`
 
 </details>
