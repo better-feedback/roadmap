@@ -1,5 +1,9 @@
 # Better
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/kontext/clone?teamCreateStatus=hidden&repository-url=https%3A%2F%2Fgithub.com%2Fbetter-feedback%2Froadmap&demo-title=Better%20Board%20Demo&demo-description=The%20Better%20board%20&demo-url=https%3A%2F%2Froadmap.betterhq.org&demo-image=https%3A%2F%2Fi.imgur.com%2FTxkzN48.jpeg&env=NEXT_PUBLIC_REPO_OWNER,NEXT_PUBLIC_REPO_NAME,NEXT_PUBLIC_PROJECT,NEXT_PUBLIC_SHOW_DOWNVOTES,NEXT_PUBLIC_ALCHEMY_ID,NEXT_PUBLIC_USE_WHITELIST,NEXT_PUBLIC_NEAR_NETWORK_ID,NEXT_PUBLIC_NEAR_WALLET_URL,NEXT_PUBLNEAR_HELPER_URL,NEXT_PUBLIC_NEAR_EXPLORER_URL,NEXT_PUBLIC_NEAR_JSON_RPC_URL,NEXT_PUBLIC_NEAR_API_BASE_URL,NEXT_PUBLIC_NEAR_DAO_ID,NEXT_PUBLIC_GUILD_ID,NEXT_PUBLIC_ROLE_ID,NEXT_PUBLIC_NEAR_ROLE_ID,NEXT_PUBLIC_POLYGON_CONTRACT_ADDRESS,GITHUB_PAT,AUTH0_SECRET,AUTH0_BASE_URL,AUTH0_ISSUER_BASE_URL,AUTH0_CLIENT_ID,AUTH0_CLIENT_SECRET,AUTH0_API_IDENTIFIER)
+
+☝️ Deploy your Better Board instantly 👆
+
 ## How to submit your idea
 
 Visit [/roadmap/issues](https://github.com/better-feedback/roadmap/issues) and add a new issue.
