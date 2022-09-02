@@ -1,7 +1,5 @@
 import Link from "next/link";
 
-import ListItemMetadata from "./list-item-metadata";
-
 import type { Issue, Label } from "../types";
 
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
@@ -124,7 +122,6 @@ export function IssuesListItem(props: Props) {
           </div>
         </div>
       </Link>
-      <ListItemMetadata metadata={issue.metadata} />
       <div className="flex flex-row justify-center items-center">
         <div className="flex flex-col justify-center items-center space-y-4 pr-1">
           <IoIosArrowUp
