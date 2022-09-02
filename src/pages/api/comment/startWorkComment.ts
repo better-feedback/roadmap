@@ -15,23 +15,27 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
-    const { id, issueNumber } = req.body;
+    const { id, issueNumber, isGitAuthed, walletId } = req.body;
 
-    const response = (await getUserAccessKey(id)) as any;
+    const response = isGitAuthed ? ((await getUserAccessKey(id)) as any) : null;
 
-    const accessToken = response?.identities[0].access_token;
-
-    res.status(200).json(response);
+    const accessToken = isGitAuthed
+      ? response?.identities[0].access_token
+      : process.env.GITHUB_PAT;
 
     const octoKit = new Octokit({
       auth: accessToken,
     });
 
+    const bodyMesage = isGitAuthed
+      ? `${response.name} has started working on this issue`
+      : `@${walletId} has started working on this issue`;
+
     await octoKit.rest.issues.createComment({
       owner: process.env.NEXT_PUBLIC_REPO_OWNER as string,
       repo: process.env.NEXT_PUBLIC_REPO_NAME as string,
       issue_number: issueNumber,
-      body: `${response.name} has started working on this issue`,
+      body: bodyMesage,
     });
 
     res.status(200).json({ message: "Comment added" });

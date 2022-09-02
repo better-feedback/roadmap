@@ -2,7 +2,7 @@
 name: Feature request
 about: Suggest an idea for this project
 title: ''
-labels: ''
+labels: feature, open
 assignees: ''
 
 ---
@@ -16,8 +16,8 @@ As X I want to X, so I can X.
 
 ## Tasks
 
-- [ ] 
-- [ ] 
-- [ ] 
+- [ ]
+- [ ]
+- [ ]
 
 ## Notes
