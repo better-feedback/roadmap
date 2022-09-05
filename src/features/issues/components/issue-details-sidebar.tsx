@@ -8,6 +8,7 @@ import {
   useWalletIsSignedInQuery,
   useWalletSignedInAccountQuery,
 } from "features/common/hooks/useWalletQueries";
+import { AiFillGithub } from "react-icons/ai";
 
 import { useUser } from '@auth0/nextjs-auth0'
 
@@ -311,9 +312,20 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
       </div>
       {(isNotConnectedToWallet()) && (
         <p className="text-xs text-center mt-2 text-gray-500 dark:text-zinc-500">
-          You need to connect a wallet to add a bounty.
+          Connect a wallet to add bounties.
         </p>
       )}
+      <div className="flex flex-col gap-y-4 justify-center pt-4">
+        <a
+          className="flex flex-row items-center space-x-2 px-4 py-2 rounded-md bg-pink-500 text-white shadow-lg shadow-pink-500/40 hover:brightness-150"
+          href={props.issue.html_url}
+          target="_blank"
+          rel="noreferrer"
+        >
+        <AiFillGithub className="text-[1.5rem] cursor-pointer w-4 h-4 mr-2"/>
+          View on GitHub
+        </a>
+      </div>
     </aside>
   );
 }

@@ -8,7 +8,7 @@
 
 Visit [/roadmap/issues](https://github.com/better-feedback/roadmap/issues) and add a new issue.
 
-To list an issue on your Better board, tag it as `bug` or `feature` and its status as `open`, `inProgress` or `live`.
+To list an issue on your Better board, tag it as `open`, `inProgress` or `live`.
 
 Your issue now appears on [roadmap.betterhq.org](https://roadmap.betterhq.org/) and you can
 
@@ -41,6 +41,8 @@ After a successful deployment, point your Vercel deployment to your custom URL: 
 🎊 Congratulations, you are hosting your own Better board 🎉
 
 - When using a private repo, make sure to add our notification bot `betterhq-bot` as contributor.
+
+![Better screenshot - light and dark - Sept 22](https://user-images.githubusercontent.com/25006584/188115652-54710ee1-3c52-47b3-991b-85d1e93ca4f6.png)
 
 ---
 
