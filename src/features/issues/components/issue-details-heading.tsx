@@ -10,14 +10,6 @@ export default function IssueDetailsHeading(props: { issue: Issue }) {
             #{props.issue.number}
           </span>
         </h1>
-        <a
-          href={props.issue.html_url}
-          target="_blank"
-          rel="noreferrer"
-          className="underline cursor-pointer decoration-pink-500"
-        >
-          View on GitHub
-        </a>
       </div>
       <div className="border-b-2 text-gray-500 border-gray-100 py-4 mb-4 dark:text-zinc-500 dark:border-zinc-800 ">
         {props.issue.user.login} opened this issue on {props.issue.created_at}

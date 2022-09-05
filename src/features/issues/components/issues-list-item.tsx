@@ -90,31 +90,34 @@ export function IssuesListItem(props: Props) {
         <div className="flex flex-row justify-between items-center">
           <div className="flex flex-col">
             <h3 className="font-semibold">{issue.title}</h3>
-            <div className="py-1 text-xs">
+            <div className="py-1 text-xs text-gray-500">
               {`#${issue.number} opened on ${issue.created_at} by ${issue.user.login}`}
             </div>
 
-            <div className="flex w-full gap-x-2 py-1 text-xs">
-              <div className="flex items-center gap-x-2">
-                <NearLogo className="h-3 dark:fill-white" />
-                <span>{bounty != null ? pool : "-"} Near</span>
-              </div>
+            <div className="flex w-full gap-x-2 text-xs">
+              {bounty != null ?
+                <div className="flex items-center py-1 gap-x-2">
+                  <NearLogo className="h-3 dark:fill-white" />
+                  <span> {pool} Near</span>
+                </div>
+              : null}
 
-              <div className="flex items-center gap-x-2">
-                <PolygonLogo className="h-3 dark:fill-white" />
-                <span>{bountySolidity?.data?.id !== "" ? ethers.utils.formatEther(bountySolidity?.data?.pool || "0").toString() : "-"} MATIC</span>
-              </div>
-
+              {bountySolidity?.data?.id !== "" ?
+                <div className="flex items-center py-1 gap-x-2">
+                  <PolygonLogo className="h-3 dark:fill-white" />
+                  <span>{ethers.utils.formatEther(bountySolidity?.data?.pool || "0").toString()} MATIC</span>
+                </div>
+              : null}
             </div>
 
-            <div className="flex gap-2 flex-wrap mt-1">
+            <div className="flex gap-2 py-1 flex-wrap">
               {issue?.labels.map((label: Label) => {
                 return (
                   <div
                     key={label.id}
                     className={`inline-flex items-center justify-center px-2 border-2 border-gray-200 dark:border-zinc-800 rounded-md bg-transparent text-gray-500`}
                   >
-                    <span className={`text-sm`}>{label.name}</span>
+                    <span className={`text-xs`}>{label.name}</span>
                   </div>
                 );
               })}
