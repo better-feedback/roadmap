@@ -23,13 +23,13 @@ export const nearChainConfig = {
 
 export const siteConfig = {
   enabledChains: ["near" , "polygon"],
-  projectName: "Better",
-  title: "Better Roadmap",
-  metaDescription: "Better Roadmap",
-  url: "https://roadmap.betterhq.org/",
-  metaImg: "https://raw.githubusercontent.com/better-feedback/roadmap/main/public/metaTagImg.jpg",
+  projectName: "Zerion",
+  title: "Zerion Roadmap",
+  metaDescription: "Zerion Roadmap",
+  url: "https://zerion.betterhq.org/",
+  metaImg: "https://raw.githubusercontent.com/better-feedback/better-app/1926cf0a2327e629128f65e57edeee7440294e0b/public/metaTagImg.jpg?token=AF6ZD6A7XI4IS7I3MRLDQSDCTY6QK",
   externalLinks: {
-    docs: "https://github.com/better-feedback/roadmap#readme",
+    docs: "https://github.com/better-feedback/better-zerion#readme",
     discord: "wwwwRFa6aj",
     twitter: "betterdao",
   },
