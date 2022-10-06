@@ -94,6 +94,24 @@ yarn dev
 </details>
 
 <details>
+  <summary>How to set up Github authentication</summary>
+    
+    Github authentication allows users to submit ideas using their account handle.
+
+    Set up your authentication at [auth0.com](https://auth0.com/) and fill these environment variable values at https://vercel.com/{your_org}/{your_project}/settings/environment-variables
+    
+    ```
+    AUTH0_SECRET=
+    AUTH0_BASE_URL=
+    AUTH0_ISSUER_BASE_URL=
+    AUTH0_CLIENT_ID=
+    AUTH0_CLIENT_SECRET=
+    AUTH0_API_IDENTIFIER=
+    ```
+
+</details>
+
+<details>
   <summary>How to set up Guild.xyz to allow voting with NEAR wallets</summary>
 
 1. Head to [guild.xyz](https://guild.xyz/) and create your own guild
