@@ -1,4 +1,4 @@
-# Better
+# Better 
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/kontext/clone?teamCreateStatus=hidden&repository-url=https%3A%2F%2Fgithub.com%2Fbetter-feedback%2Froadmap&demo-title=Better%20Board%20Setup&demo-description=Check%20our%20documentation%20for%20environment%20variable%20values&demo-url=https%3A%2F%2Fgithub.com%2Fbetter-feedback%2Froadmap%2Fblob%2Fmain%2F.env.example&demo-image=https%3A%2F%2Fi.imgur.com%2FTxkzN48.jpeg&env=NEXT_PUBLIC_REPO_OWNER,NEXT_PUBLIC_REPO_NAME,NEXT_PUBLIC_PROJECT,NEXT_PUBLIC_SHOW_DOWNVOTES,NEXT_PUBLIC_ALCHEMY_ID,NEXT_PUBLIC_USE_WHITELIST,NEXT_PUBLIC_NEAR_NETWORK_ID,NEXT_PUBLIC_NEAR_WALLET_URL,NEXT_PUBLNEAR_HELPER_URL,NEXT_PUBLIC_NEAR_EXPLORER_URL,NEXT_PUBLIC_NEAR_JSON_RPC_URL,NEXT_PUBLIC_NEAR_API_BASE_URL,NEXT_PUBLIC_NEAR_DAO_ID,NEXT_PUBLIC_GUILD_ID,NEXT_PUBLIC_ROLE_ID,NEXT_PUBLIC_NEAR_ROLE_ID,NEXT_PUBLIC_POLYGON_CONTRACT_ADDRESS,GITHUB_PAT&envDescription=Check%20our%20documentation%20for%20environment%20variable%20values👉&envLink=https%3A%2F%2Fgithub.com%2Fbetter-feedback%2Froadmap%2Fblob%2Fmain%2F.env.example)
 
