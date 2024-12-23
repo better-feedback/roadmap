@@ -25,7 +25,7 @@ import { viewFunction, callFunction } from "features/near/api";
 import { parseDate } from "../../../utils/helpers.js";
 import { QueryObserverIdleResult } from "react-query";
 import { useContractRead, useAccount, useContractWrite } from "wagmi";
-import { ethers } from "ethers";
+import { formatEther } from "ethers";
 import axios from "axios";
 
 
@@ -244,7 +244,7 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
               {!bounty ? "-" : pool + " Near"} - ${poolInDollars}
             </div>
             <div>
-              {bountySolidity?.data?.id === "" || bountySolidity.isLoading ? "-" : ethers.utils.formatEther(bountySolidity?.data?.pool ? bountySolidity?.data?.pool : 0).toString() + " Matic"} - ${maticPriceInDollars}
+              {bountySolidity?.data?.id === "" || bountySolidity.isLoading ? "-" : formatEther(bountySolidity?.data?.pool ? bountySolidity?.data?.pool : 0).toString() + " Matic"} - ${maticPriceInDollars}
             </div>
           </>
         }

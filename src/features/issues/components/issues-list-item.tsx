@@ -23,7 +23,7 @@ import { contractConfig } from "utils/solidity/defaultConfig";
 
 import NearLogo from "../../common/components/icons/near-logo"
 import PolygonLogo from "../../common/components/icons/polygon-logo"
-import { ethers } from "ethers";
+import { formatEther } from "ethers";
 import { viewFunction } from "features/near/api";
 import { useEffect, useState } from "react";
 // import { utils } from "near-api-js";
@@ -105,7 +105,7 @@ export function IssuesListItem(props: Props) {
               {bountySolidity?.data?.id !== "" ?
                 <div className="flex items-center py-1 gap-x-2">
                   <PolygonLogo className="h-3 dark:fill-white" />
-                  {/* <span>{ethers.utils.formatEther(bountySolidity?.data?.pool || "0").toString()} MATIC</span> */}
+                  <span>{formatEther(bountySolidity?.data?.pool || "0").toString()} MATIC</span>
                 </div>
               : null}
             </div>

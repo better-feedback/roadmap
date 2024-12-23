@@ -13,7 +13,7 @@ import { viewFunction } from "features/near/api";
 import { useRouter } from "next/router";
 
 import type { Token } from "features/tokens/types";
-import { ethers } from "ethers";
+import { parseEther } from "ethers";
 import { useContractWrite, useAccount, useContractRead } from "wagmi";
 
 import { contractConfig } from "utils/solidity/defaultConfig";
@@ -50,7 +50,7 @@ export default function AddBounty(props: { issueNumber: number }) {
     (process.env.NEXT_PUBLIC_PROJECT as string).toLowerCase()
     ],
     overrides: {
-      value: ethers.utils.parseEther(amount ? amount : "0"),
+      value: parseEther(amount ? amount : "0"),
     },
     onError: (error) => {
       setIsCreationLoading(false)
