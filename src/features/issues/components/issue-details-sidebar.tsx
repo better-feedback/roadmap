@@ -14,7 +14,7 @@ import { useUser } from '@auth0/nextjs-auth0'
 
 import { contractConfig } from "utils/solidity/defaultConfig"
 
-import { utils } from "near-api-js";
+// import { utils } from "near-api-js";
 
 
 
@@ -147,7 +147,7 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
     viewFunction("getBountyByIssue", { issueId: props.issue.url })
       .then((res) => {
         setBounty(res);
-        setPool(utils.format.formatNearAmount(res?.pool));
+        // setPool(utils.format.formatNearAmount(res?.pool));
       })
       .catch((error) => {
         console.log(error);
@@ -225,11 +225,11 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
       );
       const maticPrice = await apiData.json();
 
-      setMaticPriceInDollars(
-        (maticPrice?.market_data?.current_price?.usd * parseFloat(ethers.utils.formatEther(bountySolidity?.data?.pool).toString())).toFixed(
-          2
-        )
-      );
+      // setMaticPriceInDollars(
+      //   (maticPrice?.market_data?.current_price?.usd * parseFloat(ethers.utils.formatEther(bountySolidity?.data?.pool).toString())).toFixed(
+      //     2
+      //   )
+      // );
     })();
   }, [bountySolidity.data])
 

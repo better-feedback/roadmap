@@ -26,7 +26,7 @@ import PolygonLogo from "../../common/components/icons/polygon-logo"
 import { ethers } from "ethers";
 import { viewFunction } from "features/near/api";
 import { useEffect, useState } from "react";
-import { utils } from "near-api-js";
+// import { utils } from "near-api-js";
 
 const octokit = new Octokit({ auth: config.github.pat });
 
@@ -65,7 +65,7 @@ export function IssuesListItem(props: Props) {
     viewFunction("getBountyByIssue", { issueId: props.issue.url })
       .then((res) => {
         setBounty(res);
-        setPool(utils.format.formatNearAmount(res?.pool));
+        // setPool(utils.format.formatNearAmount(res?.pool));
       })
       .catch((error) => {
         console.log(error);
@@ -105,7 +105,7 @@ export function IssuesListItem(props: Props) {
               {bountySolidity?.data?.id !== "" ?
                 <div className="flex items-center py-1 gap-x-2">
                   <PolygonLogo className="h-3 dark:fill-white" />
-                  <span>{ethers.utils.formatEther(bountySolidity?.data?.pool || "0").toString()} MATIC</span>
+                  {/* <span>{ethers.utils.formatEther(bountySolidity?.data?.pool || "0").toString()} MATIC</span> */}
                 </div>
               : null}
             </div>
