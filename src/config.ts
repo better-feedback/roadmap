@@ -22,7 +22,7 @@ export const nearChainConfig = {
 };
 
 export const siteConfig = {
-  enabledChains: ["near" , "polygon"],
+  enabledChains: ["polygon"],
   projectName: "2077 Idea Board",
   title: "2077 Idea Board",
   metaDescription: "2077 Idea Board",
