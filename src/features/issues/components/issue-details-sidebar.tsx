@@ -45,11 +45,14 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
   const { address, isConnected } = useAccount();
   const { user } = useUser();
 
+  // Disable contract interactions during SSR
+  const shouldEnableContract = typeof window !== 'undefined' && !!props.issue?.url;
+
   const bountySolidity = useContractRead({
     ...contractConfig,
     functionName: "getBountyById",
     args: [props.issue?.url ?? ""],
-    enabled: !!props.issue?.url && typeof window !== 'undefined',
+    enabled: shouldEnableContract,
   });
 
   const loadBountyDetails = async () => {
@@ -125,17 +128,19 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
     ...contractConfig,
     functionName: 'startWork',
     args: [props.issue?.url ?? ""],
-    enabled: !!props.issue?.url && typeof window !== 'undefined',
+    enabled: shouldEnableContract,
     onError: (error) => {
       setIsApplyingToWork(false);
-      alert(error);
+      if (typeof window !== 'undefined') {
+        alert(error);
+      }
     },
     onSuccess: async () => {
       setIsApplyingToWork(false);
       await postComment();
-      setTimeout(() => {
+      if (typeof window !== 'undefined') {
         window.location.reload();
-      }, 300);
+      }
     }
   });
 
@@ -143,39 +148,34 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
 
 
   const isExpired = () => {
-    const localStorageChain = localStorage.getItem("wallet-chain")
-
-    if (!localStorageChain) {
-      return false
-    }
+    if (typeof window === 'undefined') return false;
+    const localStorageChain = localStorage.getItem("wallet-chain");
+    if (!localStorageChain) return false;
 
     if (localStorageChain === "near") {
-      return !bounty ? false : Math.floor(Date.now() / 1000) > parseInt(bounty?.deadline);
+      return bounty ? Math.floor(Date.now() / 1000) > parseInt(bounty.deadline) : false;
     } else {
-      if (bountySolidity?.data?.id !== "") {
-
-        return Math.floor(Date.now() / 1000) > parseInt(bountySolidity?.data?.deadline);
-      } else {
-        return false
-      }
+      return bountySolidity?.data?.id !== "" && 
+        Math.floor(Date.now() / 1000) > parseInt(bountySolidity?.data?.deadline || "0");
     }
-  }
+  };
 
   const isStartWorkDisabled = () => {
-    let isDisabled = true;
-
-
+    if (typeof window === 'undefined') return true;
+    
     if (walletChain === "near") {
-      isDisabled = !bounty ||
+      return !bounty ||
         !walletIsSignedInQuery.data ||
-        bounty?.workers?.includes(walletId?.data) || isApplyingToWork
-    } else if (walletChain === "polygon") {
-      isDisabled = !isConnected || isApplyingToWork || bountySolidity?.data?.id == "" || (bountySolidity?.data?.workers?.includes(address) || bountySolidity.isLoading)
-    }
-
-
-    return isDisabled;
-  }
+        bounty?.workers?.includes(walletId?.data) || 
+        isApplyingToWork;
+    } 
+    
+    return !isConnected || 
+      isApplyingToWork || 
+      !bountySolidity?.data?.id || 
+      bountySolidity?.data?.workers?.includes(address) || 
+      bountySolidity.isLoading;
+  };
 
   useEffect(() => {
     /* This is a function that is called when a bounty is found. It fetches the current price of
