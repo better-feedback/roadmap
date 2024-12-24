@@ -1,10 +1,9 @@
-import * as nearApi from "near-api-js";
-
-import { nearChainConfig } from "config";
-
+// import * as nearApi from "near-api-js";
+// import { nearChainConfig } from "config";
 import type { Token } from "features/tokens/types";
 
 export async function initNearWalletConnection() {
+  /* 
   const near = await nearApi.connect({
     networkId: nearChainConfig.networkId,
     keyStore: new nearApi.keyStores.BrowserLocalStorageKeyStore(),
@@ -13,65 +12,82 @@ export async function initNearWalletConnection() {
     helperUrl: nearChainConfig.helperUrl,
   });
   return new nearApi.WalletConnection(near, null);
+  */
+  return null;
 }
 
 export async function signIn() {
+  /*
   const nearWalletConnection = await initNearWalletConnection();
-
   return nearWalletConnection.requestSignIn({
     contractId: nearChainConfig.daoId,
   });
+  */
+  return null;
 }
 
 export async function isSignedIn() {
+  /*
   const nearWalletConnection = await initNearWalletConnection();
   let bool = await nearWalletConnection.isSignedIn();
   return bool;
+  */
+  return false;
 }
 
 export async function returnWallet() {
+  /*
   const nearWalletConnection = await initNearWalletConnection();
   return nearWalletConnection;
+  */
+  return null;
 }
 
 export async function signOut() {
+  /*
   const nearWalletConnection = await initNearWalletConnection();
-
   return nearWalletConnection.signOut();
+  */
+  return null;
 }
 
 export async function getAccountId(): Promise<string> {
+  /*
   const nearWalletConnection = await initNearWalletConnection();
-
   return nearWalletConnection.getAccountId();
+  */
+  return "";
 }
 
 export async function initDaoContract() {
+  /*
   const nearWalletConnection = await initNearWalletConnection();
   const account = nearWalletConnection.account();
-
   return new nearApi.Contract(account, nearChainConfig.daoId, {
     viewMethods: ["getMessages"],
     changeMethods: ["add_proposal"],
   });
+  */
+  return null;
 }
 
-//Function for view methods
 export const viewFunction = async (functionName: string, args = {}) => {
+  /*
   const nearWalletConnection = await initNearWalletConnection();
   const result = await nearWalletConnection
     .account()
     .viewFunction(nearChainConfig.daoId, functionName, args);
-
   return result;
+  */
+  return null;
 };
 
-//Function for call method
 export const callFunction = async (
   functionName: string,
   args = {},
   deposit = "0"
 ) => {
+  /*
   const nearWalletConnection = await initNearWalletConnection();
   const result = await nearWalletConnection.account().functionCall({
     contractId: nearChainConfig.daoId,
@@ -80,6 +96,8 @@ export const callFunction = async (
     attachedDeposit: nearApi.utils.format.parseNearAmount(deposit),
   });
   return result;
+  */
+  return null;
 };
 
 export async function addBounty(params: {
@@ -89,6 +107,7 @@ export async function addBounty(params: {
   startedAt: number;
   project: string;
 }) {
+  /*
   callFunction(
     "fundBounty",
     {
@@ -103,6 +122,8 @@ export async function addBounty(params: {
     .catch((error) => {
       console.log("Fund Error", error);
     });
+  */
+  return null;
 }
 
 export async function claimBounty() {

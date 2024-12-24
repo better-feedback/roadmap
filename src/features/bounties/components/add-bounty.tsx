@@ -13,7 +13,7 @@ import { viewFunction } from "features/near/api";
 import { useRouter } from "next/router";
 
 import type { Token } from "features/tokens/types";
-import { ethers } from "ethers";
+import { parseEther } from "ethers";
 import { useContractWrite, useAccount, useContractRead } from "wagmi";
 
 import { contractConfig } from "utils/solidity/defaultConfig";
@@ -36,40 +36,38 @@ export default function AddBounty(props: { issueNumber: number }) {
   const { data: walletChain = "" } = useWalletChainQuery();
   const addBountyMutation = useAddBountyMutation();
   const router = useRouter();
-  const account = useAccount();
+  const { address } = useAccount();
 
 
 
-  const { data, isError, isLoading: writing, write } = useContractWrite({
+  const { write, isLoading: writing } = useContractWrite({
     ...contractConfig,
     functionName: 'fundBounty',
-    args: [issue?.url, maxDeadline
-      ? Math.floor((new Date(new Date(maxDeadline).setUTCHours(23, 59, 59, 59)).getTime() / 1000)).toString()
-      : "0",
-    Math.floor(Date.now() / 1000).toString(),
-    (process.env.NEXT_PUBLIC_PROJECT as string).toLowerCase()
+    args: [
+      issue?.url ?? "",
+      maxDeadline
+        ? Math.floor((new Date(new Date(maxDeadline).setUTCHours(23, 59, 59, 59)).getTime() / 1000)).toString()
+        : "0",
+      Math.floor(Date.now() / 1000).toString(),
+      (process.env.NEXT_PUBLIC_PROJECT as string)?.toLowerCase() ?? ""
     ],
-    overrides: {
-      value: ethers.utils.parseEther(amount ? amount : "0"),
-    },
+    value: parseEther(amount || "0"),
     onError: (error) => {
-      setIsCreationLoading(false)
-      alert(error)
-
+      setIsCreationLoading(false);
+      alert(error);
     },
     onSuccess: () => {
-      setIsCreationLoading(false)
-
+      setIsCreationLoading(false);
       router.replace(`/issues/${issue?.number}`);
     }
-  })
+  });
 
 
   const bountyPolygon = useContractRead({
     ...contractConfig,
     functionName: "getBountyById",
-    args: issue?.url,
-    watch: true,
+    args: [issue?.url ?? ""],
+    enabled: !!issue?.url,
   });
 
   function handleChangeMaxDeadline(event: React.ChangeEvent<HTMLInputElement>) {

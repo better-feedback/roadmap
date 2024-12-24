@@ -14,7 +14,7 @@ import { useUser } from '@auth0/nextjs-auth0'
 
 import { contractConfig } from "utils/solidity/defaultConfig"
 
-import { utils } from "near-api-js";
+// import { utils } from "near-api-js";
 
 
 
@@ -25,7 +25,7 @@ import { viewFunction, callFunction } from "features/near/api";
 import { parseDate } from "../../../utils/helpers.js";
 import { QueryObserverIdleResult } from "react-query";
 import { useContractRead, useAccount, useContractWrite } from "wagmi";
-import { ethers } from "ethers";
+import { formatEther } from "ethers";
 import axios from "axios";
 
 
@@ -35,40 +35,52 @@ import axios from "axios";
 export default function IssueDetailsSidebar(props: { issue: Issue }) {
   const router = useRouter();
   const walletIsSignedInQuery = useWalletIsSignedInQuery();
-  const walletId = useWalletSignedInAccountQuery()
-
-  const walledId = useWalletSignedInAccountQuery();
-  const { data: walletChain } = useWalletChainQuery()
+  const walletId = useWalletSignedInAccountQuery();
+  const { data: walletChain } = useWalletChainQuery();
   const [bounty, setBounty] = useState<Bounty | null>(null);
   const [pool, setPool] = useState("");
-  // Near price in dollars
   const [poolInDollars, setPoolInDollars] = useState<string>("");
-  // Matic price in dollars
   const [maticPriceInDollars, setMaticPriceInDollars] = useState<string>("");
   const [isApplyingToWork, setIsApplyingToWork] = useState(false);
+  const { address, isConnected } = useAccount();
+  const { user } = useUser();
 
-  // Getting logged in user wallet address
-  const { address, isConnected } = useAccount()
+  // Disable contract interactions during SSR
+  const shouldEnableContract = typeof window !== 'undefined' && !!props.issue?.url;
 
-  const { user, error, isLoading } = useUser();
+  const bountySolidity = useContractRead({
+    ...contractConfig,
+    functionName: "getBountyById",
+    args: [props.issue?.url ?? ""],
+    enabled: shouldEnableContract,
+  });
 
+  const loadBountyDetails = async () => {
+    if (!props.issue?.url) return;
+    try {
+      const res = await viewFunction("getBountyByIssue", { issueId: props.issue.url });
+      setBounty(res);
+      if (res?.pool) {
+        setPool(formatEther(res.pool));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    loadBountyDetails();
+  }, [props.issue?.url]);
 
   const isNotConnectedToWallet = () => {
-    let isNotConnected = true;
-
-    const walletChainFromLocalStorage = localStorage.getItem("wallet-chain")
-
-
-
-
-    if (walletChainFromLocalStorage === "near") {
-      isNotConnected = !walletIsSignedInQuery.data
-    } else if (walletChainFromLocalStorage === "polygon") {
-      isNotConnected = !isConnected
-    }
-
-    return isNotConnected
-  }
+    if (typeof window === 'undefined') return true;
+    const walletChainFromLocalStorage = localStorage.getItem("wallet-chain");
+    if (!walletChainFromLocalStorage) return true;
+    
+    return walletChainFromLocalStorage === "near" 
+      ? !walletIsSignedInQuery.data
+      : !isConnected;
+  };
 
   const getWalletId = () => {
     const walletChain = localStorage.getItem("wallet-chain")
@@ -112,92 +124,58 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
   }
 
 
-  const bountySolidity = useContractRead({
+  const { write: startWorkPolygon } = useContractWrite({
     ...contractConfig,
-    functionName: "getBountyById",
-    args: props.issue.url,
-    watch: true,
+    functionName: 'startWork',
+    args: [props.issue?.url ?? ""],
+    enabled: shouldEnableContract,
+    onError: (error) => {
+      setIsApplyingToWork(false);
+      if (typeof window !== 'undefined') {
+        alert(error);
+      }
+    },
+    onSuccess: async () => {
+      setIsApplyingToWork(false);
+      await postComment();
+      if (typeof window !== 'undefined') {
+        window.location.reload();
+      }
+    }
   });
 
 
 
-  const { write: startWorkPoylgon } = useContractWrite({
-    ...contractConfig,
-    functionName: 'startWork',
-    args: props.issue.url,
-
-    onError: (error) => {
-      setIsApplyingToWork(false)
-      alert(error)
-    },
-    onSuccess: async () => {
-      setIsApplyingToWork(false)
-      await postComment()
-
-      setTimeout(() => {
-        window.location.reload();
-      }, 300)
-    }
-  })
-
-
-
-
-  const loadBountyDetails = () => {
-    viewFunction("getBountyByIssue", { issueId: props.issue.url })
-      .then((res) => {
-        setBounty(res);
-        setPool(utils.format.formatNearAmount(res?.pool));
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
 
   const isExpired = () => {
-    const localStorageChain = localStorage.getItem("wallet-chain")
-
-    if (!localStorageChain) {
-      return false
-    }
+    if (typeof window === 'undefined') return false;
+    const localStorageChain = localStorage.getItem("wallet-chain");
+    if (!localStorageChain) return false;
 
     if (localStorageChain === "near") {
-      return !bounty ? false : Math.floor(Date.now() / 1000) > parseInt(bounty?.deadline);
+      return bounty ? Math.floor(Date.now() / 1000) > parseInt(bounty.deadline) : false;
     } else {
-      if (bountySolidity?.data?.id !== "") {
-
-        return Math.floor(Date.now() / 1000) > parseInt(bountySolidity?.data?.deadline);
-      } else {
-        return false
-      }
+      return bountySolidity?.data?.id !== "" && 
+        Math.floor(Date.now() / 1000) > parseInt(bountySolidity?.data?.deadline || "0");
     }
-  }
+  };
 
   const isStartWorkDisabled = () => {
-    let isDisabled = true;
-
-
+    if (typeof window === 'undefined') return true;
+    
     if (walletChain === "near") {
-      isDisabled = !bounty ||
+      return !bounty ||
         !walletIsSignedInQuery.data ||
-        bounty?.workers?.includes(walledId?.data) || isApplyingToWork
-    } else if (walletChain === "polygon") {
-      isDisabled = !isConnected || isApplyingToWork || bountySolidity?.data?.id == "" || (bountySolidity?.data?.workers?.includes(address) || bountySolidity.isLoading)
-    }
-
-
-    return isDisabled;
-  }
-
-  /* A hook that is called when the component is mounted.
-  In order to fetch the bounty stored in the contract
- */
-  useEffect(() => {
-
-    if (!props.issue) return;
-    loadBountyDetails();
-  }, []);
+        bounty?.workers?.includes(walletId?.data) || 
+        isApplyingToWork;
+    } 
+    
+    return !isConnected || 
+      isApplyingToWork || 
+      !bountySolidity?.data?.id || 
+      bountySolidity?.data?.workers?.includes(address) || 
+      bountySolidity.isLoading;
+  };
 
   useEffect(() => {
     /* This is a function that is called when a bounty is found. It fetches the current price of
@@ -225,11 +203,11 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
       );
       const maticPrice = await apiData.json();
 
-      setMaticPriceInDollars(
-        (maticPrice?.market_data?.current_price?.usd * parseFloat(ethers.utils.formatEther(bountySolidity?.data?.pool).toString())).toFixed(
-          2
-        )
-      );
+      // setMaticPriceInDollars(
+      //   (maticPrice?.market_data?.current_price?.usd * parseFloat(ethers.utils.formatEther(bountySolidity?.data?.pool).toString())).toFixed(
+      //     2
+      //   )
+      // );
     })();
   }, [bountySolidity.data])
 
@@ -244,28 +222,33 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
               {!bounty ? "-" : pool + " Near"} - ${poolInDollars}
             </div>
             <div>
-              {bountySolidity?.data?.id === "" || bountySolidity.isLoading ? "-" : ethers.utils.formatEther(bountySolidity?.data?.pool ? bountySolidity?.data?.pool : 0).toString() + " Matic"} - ${maticPriceInDollars}
+              {bountySolidity?.data?.id === "" || bountySolidity.isLoading ? "-" : formatEther(bountySolidity?.data?.pool ? bountySolidity?.data?.pool : 0).toString() + " Matic"} - ${maticPriceInDollars}
             </div>
           </>
         }
       />
-      {bounty !== null || bountySolidity?.data?.id !== "" && (
+      {(bounty !== null || bountySolidity?.data?.id !== "") && (
         <SidebarItem
           title="Deadline"
-          content={<><div>Near: {bounty?.deadline ? parseDate(bounty?.deadline) : "-"}</div>
-            <div>Polygon: {bountySolidity?.data?.id !== "" || bountySolidity.isLoading ? parseDate(bountySolidity?.data?.deadline) : "-"}</div>
-          </>}
+          content={
+            <>
+              <div>Near: {bounty?.deadline ? parseDate(bounty.deadline) : "-"}</div>
+              <div>
+                Polygon: {bountySolidity?.data?.id && !bountySolidity.isLoading 
+                  ? parseDate(bountySolidity.data.deadline) 
+                  : "-"}
+              </div>
+            </>
+          }
         />
       )}
       <SidebarItem
         title="Funders"
         content={
           <div className="flex gap-2 flex-wrap">
-            {!bounty
-              ? "-"
-              : bounty.funders.map((funder: string) => {
-                return <span key={funder}>{funder}</span>;
-              })}
+            {bounty?.funders?.map((funder: string) => (
+              <span key={funder}>{funder}</span>
+            )) ?? "-"}
           </div>
         }
       />
@@ -300,7 +283,7 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
 
             }
             else {
-              startWorkPoylgon()
+              startWorkPolygon()
             }
           }}
           disabled={
