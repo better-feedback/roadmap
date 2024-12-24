@@ -2,7 +2,6 @@ import { useRouter } from "next/router";
 import dynamic from 'next/dynamic';
 import Layout from "../../common/components/layout";
 
-// Dynamically import IssueDetails to avoid SSR issues
 const IssueDetails = dynamic(
   () => import("./issue-details").then(mod => mod.IssueDetails),
   { 
@@ -19,9 +18,15 @@ const IssueDetails = dynamic(
   }
 );
 
-const Issue = () => {
+type Props = {
+  issueNumber?: string | number;
+};
+
+const IssueDetailsPage = ({ issueNumber: staticIssueNumber }: Props) => {
   const router = useRouter();
-  const { issueNumber } = router.query;
+  const { issueNumber: queryIssueNumber } = router.query;
+  
+  const issueNumber = staticIssueNumber || queryIssueNumber;
 
   if (!issueNumber || Array.isArray(issueNumber)) {
     return (
@@ -38,4 +43,4 @@ const Issue = () => {
   );
 };
 
-export default Issue;
+export default IssueDetailsPage;
