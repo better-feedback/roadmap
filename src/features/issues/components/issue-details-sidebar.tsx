@@ -35,23 +35,39 @@ import axios from "axios";
 export default function IssueDetailsSidebar(props: { issue: Issue }) {
   const router = useRouter();
   const walletIsSignedInQuery = useWalletIsSignedInQuery();
-  const walletId = useWalletSignedInAccountQuery()
-
-  const walledId = useWalletSignedInAccountQuery();
-  const { data: walletChain } = useWalletChainQuery()
+  const walletId = useWalletSignedInAccountQuery();
+  const { data: walletChain } = useWalletChainQuery();
   const [bounty, setBounty] = useState<Bounty | null>(null);
   const [pool, setPool] = useState("");
-  // Near price in dollars
   const [poolInDollars, setPoolInDollars] = useState<string>("");
-  // Matic price in dollars
   const [maticPriceInDollars, setMaticPriceInDollars] = useState<string>("");
   const [isApplyingToWork, setIsApplyingToWork] = useState(false);
+  const { address, isConnected } = useAccount();
+  const { user } = useUser();
 
-  // Getting logged in user wallet address
-  const { address, isConnected } = useAccount()
+  const bountySolidity = useContractRead({
+    ...contractConfig,
+    functionName: "getBountyById",
+    args: [props.issue?.url ?? ""],
+    enabled: !!props.issue?.url,
+  });
 
-  const { user, error, isLoading } = useUser();
+  const loadBountyDetails = async () => {
+    if (!props.issue?.url) return;
+    try {
+      const res = await viewFunction("getBountyByIssue", { issueId: props.issue.url });
+      setBounty(res);
+      if (res?.pool) {
+        setPool(formatEther(res.pool));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
+  useEffect(() => {
+    loadBountyDetails();
+  }, [props.issue?.url]);
 
   const isNotConnectedToWallet = () => {
     let isNotConnected = true;
@@ -112,15 +128,6 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
   }
 
 
-  const bountySolidity = useContractRead({
-    ...contractConfig,
-    functionName: "getBountyById",
-    args: props.issue.url,
-    watch: true,
-  });
-
-
-
   const { write: startWorkPoylgon } = useContractWrite({
     ...contractConfig,
     functionName: 'startWork',
@@ -141,18 +148,6 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
   })
 
 
-
-
-  const loadBountyDetails = () => {
-    viewFunction("getBountyByIssue", { issueId: props.issue.url })
-      .then((res) => {
-        setBounty(res);
-        // setPool(utils.format.formatNearAmount(res?.pool));
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
 
 
   const isExpired = () => {
@@ -181,7 +176,7 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
     if (walletChain === "near") {
       isDisabled = !bounty ||
         !walletIsSignedInQuery.data ||
-        bounty?.workers?.includes(walledId?.data) || isApplyingToWork
+        bounty?.workers?.includes(walletId?.data) || isApplyingToWork
     } else if (walletChain === "polygon") {
       isDisabled = !isConnected || isApplyingToWork || bountySolidity?.data?.id == "" || (bountySolidity?.data?.workers?.includes(address) || bountySolidity.isLoading)
     }
@@ -189,15 +184,6 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
 
     return isDisabled;
   }
-
-  /* A hook that is called when the component is mounted.
-  In order to fetch the bounty stored in the contract
- */
-  useEffect(() => {
-
-    if (!props.issue) return;
-    loadBountyDetails();
-  }, []);
 
   useEffect(() => {
     /* This is a function that is called when a bounty is found. It fetches the current price of
@@ -249,23 +235,28 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
           </>
         }
       />
-      {bounty !== null || bountySolidity?.data?.id !== "" && (
+      {(bounty !== null || bountySolidity?.data?.id !== "") && (
         <SidebarItem
           title="Deadline"
-          content={<><div>Near: {bounty?.deadline ? parseDate(bounty?.deadline) : "-"}</div>
-            <div>Polygon: {bountySolidity?.data?.id !== "" || bountySolidity.isLoading ? parseDate(bountySolidity?.data?.deadline) : "-"}</div>
-          </>}
+          content={
+            <>
+              <div>Near: {bounty?.deadline ? parseDate(bounty.deadline) : "-"}</div>
+              <div>
+                Polygon: {bountySolidity?.data?.id && !bountySolidity.isLoading 
+                  ? parseDate(bountySolidity.data.deadline) 
+                  : "-"}
+              </div>
+            </>
+          }
         />
       )}
       <SidebarItem
         title="Funders"
         content={
           <div className="flex gap-2 flex-wrap">
-            {!bounty
-              ? "-"
-              : bounty.funders.map((funder: string) => {
-                return <span key={funder}>{funder}</span>;
-              })}
+            {bounty?.funders?.map((funder: string) => (
+              <span key={funder}>{funder}</span>
+            )) ?? "-"}
           </div>
         }
       />
