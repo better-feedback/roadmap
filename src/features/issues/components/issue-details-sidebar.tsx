@@ -49,7 +49,7 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
     ...contractConfig,
     functionName: "getBountyById",
     args: [props.issue?.url ?? ""],
-    enabled: !!props.issue?.url,
+    enabled: !!props.issue?.url && typeof window !== 'undefined',
   });
 
   const loadBountyDetails = async () => {
@@ -70,21 +70,14 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
   }, [props.issue?.url]);
 
   const isNotConnectedToWallet = () => {
-    let isNotConnected = true;
-
-    const walletChainFromLocalStorage = localStorage.getItem("wallet-chain")
-
-
-
-
-    if (walletChainFromLocalStorage === "near") {
-      isNotConnected = !walletIsSignedInQuery.data
-    } else if (walletChainFromLocalStorage === "polygon") {
-      isNotConnected = !isConnected
-    }
-
-    return isNotConnected
-  }
+    if (typeof window === 'undefined') return true;
+    const walletChainFromLocalStorage = localStorage.getItem("wallet-chain");
+    if (!walletChainFromLocalStorage) return true;
+    
+    return walletChainFromLocalStorage === "near" 
+      ? !walletIsSignedInQuery.data
+      : !isConnected;
+  };
 
   const getWalletId = () => {
     const walletChain = localStorage.getItem("wallet-chain")
@@ -128,24 +121,23 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
   }
 
 
-  const { write: startWorkPoylgon } = useContractWrite({
+  const { write: startWorkPolygon } = useContractWrite({
     ...contractConfig,
     functionName: 'startWork',
-    args: props.issue.url,
-
+    args: [props.issue?.url ?? ""],
+    enabled: !!props.issue?.url && typeof window !== 'undefined',
     onError: (error) => {
-      setIsApplyingToWork(false)
-      alert(error)
+      setIsApplyingToWork(false);
+      alert(error);
     },
     onSuccess: async () => {
-      setIsApplyingToWork(false)
-      await postComment()
-
+      setIsApplyingToWork(false);
+      await postComment();
       setTimeout(() => {
         window.location.reload();
-      }, 300)
+      }, 300);
     }
-  })
+  });
 
 
 
@@ -291,7 +283,7 @@ export default function IssueDetailsSidebar(props: { issue: Issue }) {
 
             }
             else {
-              startWorkPoylgon()
+              startWorkPolygon()
             }
           }}
           disabled={

@@ -38,89 +38,91 @@ export function IssuesListItem(props: Props) {
   const { issue } = props;
   const signedInAccountQuery = useWalletSignedInAccountQuery();
   const canVote = useVotingAccessQuery();
-  const { data: walletChain } = useWalletChainQuery()
+  const { data: walletChain } = useWalletChainQuery();
   const addVote = useVote();
   const { data } = useIssueVoteCount(issue.number);
-  const [bounty, setBounty] = useState(null);
+  const [bounty, setBounty] = useState<any>(null);
   const [pool, setPool] = useState("");
 
-  const { isConnected, address } = useAccount()
-
-
+  const { isConnected, address } = useAccount();
 
   const hasUserVotes = (VoteType: string): boolean => {
-    return walletChain === "near" ? (data as CommentMatadata)?.voters?.includes(
-      signedInAccountQuery.data + VoteType
-    ) : (data as CommentMatadata)?.voters?.includes(
-      address + VoteType
-    )
-  }
+    if (!data?.voters || !address) return false;
+    
+    return walletChain === "near" 
+      ? (data as CommentMatadata)?.voters?.includes(signedInAccountQuery.data + VoteType)
+      : (data as CommentMatadata)?.voters?.includes(address + VoteType);
+  };
 
-  const isUserConnected = () => {
-    return walletChain === "near" ? signedInAccountQuery.data : isConnected
-  }
+  const isUserConnected = (): boolean => {
+    return walletChain === "near" ? !!signedInAccountQuery.data : isConnected;
+  };
 
-
-  const loadBountyDetails = () => {
-    viewFunction("getBountyByIssue", { issueId: props.issue.url })
-      .then((res) => {
-        setBounty(res);
-        // setPool(utils.format.formatNearAmount(res?.pool));
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  const loadBountyDetails = async () => {
+    if (!props.issue?.url) return;
+    
+    try {
+      const res = await viewFunction("getBountyByIssue", { issueId: props.issue.url });
+      setBounty(res);
+    } catch (error) {
+      console.error("Error loading bounty details:", error);
+    }
   };
 
   const bountySolidity = useContractRead({
     ...contractConfig,
     functionName: "getBountyById",
-    args: props.issue.url,
-    watch: true,
+    args: [props.issue?.url ?? ""],
+    enabled: !!props.issue?.url,
   });
 
   useEffect(() => {
-    loadBountyDetails()
-  }, [])
+    if (walletChain === "near") {
+      loadBountyDetails();
+    }
+  }, [props.issue?.url, walletChain]);
 
+  if (!props.issue) {
+    return null;
+  }
 
   return (
-    <li className="py-2 px-4 dark:hover:bg-zinc-800 hover:bg-gray-200 cursor-pointer overlow flex justify-between ">
-      <Link passHref href={`/issues/${issue.number}`}>
+    <li className="py-2 px-4 dark:hover:bg-zinc-800 hover:bg-gray-200 cursor-pointer overlow flex justify-between">
+      <Link passHref href={`/issues/${props.issue.number}`}>
         <div className="flex flex-row justify-between items-center">
           <div className="flex flex-col">
-            <h3 className="font-semibold">{issue.title}</h3>
+            <h3 className="font-semibold">{props.issue.title}</h3>
             <div className="py-1 text-xs text-gray-500">
-              {`#${issue.number} opened on ${issue.created_at} by ${issue.user.login}`}
+              {`#${props.issue.number} opened on ${props.issue.created_at} by ${props.issue.user.login}`}
             </div>
 
             <div className="flex w-full gap-x-2 text-xs">
-              {bounty != null ?
+              {bounty && (
                 <div className="flex items-center py-1 gap-x-2">
                   <NearLogo className="h-3 dark:fill-white" />
-                  <span> {pool} Near</span>
+                  <span>{pool} Near</span>
                 </div>
-              : null}
+              )}
 
-              {bountySolidity?.data?.id !== "" ?
+              {bountySolidity?.data?.id && (
                 <div className="flex items-center py-1 gap-x-2">
                   <PolygonLogo className="h-3 dark:fill-white" />
-                  <span>{formatEther(bountySolidity?.data?.pool || "0").toString()} MATIC</span>
+                  <span>
+                    {formatEther(bountySolidity.data.pool || "0").toString()} MATIC
+                  </span>
                 </div>
-              : null}
+              )}
             </div>
 
             <div className="flex gap-2 py-1 flex-wrap">
-              {issue?.labels.map((label: Label) => {
-                return (
-                  <div
-                    key={label.id}
-                    className={`inline-flex items-center justify-center px-2 border-2 border-gray-200 dark:border-zinc-800 rounded-md bg-transparent text-gray-500`}
-                  >
-                    <span className={`text-xs`}>{label.name}</span>
-                  </div>
-                );
-              })}
+              {props.issue.labels?.map((label: Label) => (
+                <div
+                  key={label.id}
+                  className="inline-flex items-center justify-center px-2 border-2 border-gray-200 dark:border-zinc-800 rounded-md bg-transparent text-gray-500"
+                >
+                  <span className="text-xs">{label.name}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
